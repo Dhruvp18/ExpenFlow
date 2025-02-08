@@ -15,6 +15,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "./LogInButton/LoginButton";
 import Navbar from "./Navbar"; 
+import LogoutButton from "./LogOutButton/LogoutButton";
 
 const Landing = () => {
   const { isAuthenticated } = useAuth0();
@@ -88,17 +89,18 @@ const Landing = () => {
               </p>
               <div className="flex gap-4">
                 <LoginButton
-                  link="orgdb"
+                  link=""
                   icon={<Building className="w-6 h-6" />}
                   name="Organisation"
                   design="bg-purple-900 text-white px-6 py-3 rounded-full hover:bg-purple-950 transition-colors text-lg font-medium flex items-center gap-2"
                 />
                 <LoginButton
-                  link="userdb"
+                  link=""
                   icon={<User className="w-6 h-6" />}
                   name="Employee"
                   design="bg-white border-2 border-purple-900 text-purple-900 px-8 py-4 rounded-full hover:bg-purple-50 transition-colors text-lg font-medium flex items-center gap-2"
                 />
+                <LogoutButton />
               </div>
             </div>
             <div className="fade-in-section opacity-0 flex justify-center">

@@ -104,10 +104,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-b from-white to-purple-50">
       <Navbar />
 
-      {/* Charts Grid */}
       <div className="max-w-7xl mx-auto px-4 py-8 pt-24">
         <div className="grid grid-cols-3 gap-6 pb-8">
             {[
