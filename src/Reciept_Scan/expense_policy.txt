@@ -1,0 +1,47 @@
+# Company Expense Policy Document
+
+## 1. General Guidelines
+- All expenses must be business-related and pre-approved by a manager.
+- Receipts are required for all expenses exceeding $25.
+- Expenses must be submitted within 30 days of the transaction date.
+
+## 2. Category-Specific Limits
+- Food & Beverages:
+  - Maximum per meal: $50
+  - Daily limit: $150
+- Travel:
+  - Domestic flights: $500
+  - International flights: $1,200
+- Accommodation:
+  - Hotel rate: $200 per night
+- Office Supplies:
+  - Maximum per purchase: $200
+- Entertainment:
+  - Maximum per event: $300
+
+## 3. Vendor Restrictions
+- Prohibited vendors:
+  - "XYZ Electronics"
+  - "ABC Travel Agency"
+  - "Luxury Suites Hotel"
+  - "DMART KAKINADA"  # Added this vendor as prohibited
+- Approved vendors for travel bookings:
+  - "Corporate Travel Inc."
+
+## 4. Tax Rules
+- Maximum allowable tax percentage: 10% of the subtotal.
+- Any taxes exceeding this limit must be justified with proper documentation.
+
+## 5. Miscellaneous Rules
+- Tips or gratuities: Not to exceed 20% of the total bill.
+- Personal expenses (e.g., alcohol, spa services): Not reimbursable.
+- Mileage reimbursement: Capped at $0.58 per mile for business travel.
+
+## 6. Examples of Non-Reimbursable Expenses
+- Late fees due to delayed payments.
+- Membership fees for personal clubs or organizations.
+- Gifts or donations exceeding $50 without prior approval.
+
+## 7. Consequences of Violations
+- Repeated violations: Disciplinary action, including suspension of reimbursement privileges.
+- Fraudulent claims: Immediate termination and legal action.
