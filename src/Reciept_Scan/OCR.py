@@ -1,3 +1,6 @@
+from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
+import os
 import cv2
 import pytesseract
 from PIL import Image
@@ -5,8 +8,39 @@ from langchain.prompts import PromptTemplate
 from langchain_google_genai import GoogleGenerativeAI
 import re
 import json
+from flask_cors import CORS
 
-# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
+
+# Ensure the upload folder exists
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            
+            # Process the image and extract structured data
+            structured_data = process_invoice(file_path, 'AIzaSyCvMHjtAO6wxqz6Mdy4IzgCtPxgZ8nwvt0')
+            return jsonify(structured_data)
+        else:
+            return jsonify({'error': 'Invalid file type'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 def perform_ocr(image_path):
     img_cv = cv2.imread(image_path)
@@ -99,8 +133,7 @@ def process_invoice(image_path, api_key):
     structured_info = extract_invoice_info(extracted_text, llm)
     print("\nStructured Information Extracted from Invoice:")
     print(structured_info)
+    return structured_info
 
-if __name__ == "__main__":
-    image_path = './dmart.jpg'
-    gemini_api_key = 'AIzaSyDvabrVP2DH3zjtowJQjYT1SMxfxWomXmg'
-    process_invoice(image_path, gemini_api_key)
+if __name__ == '__main__':
+    app.run(debug=True)
