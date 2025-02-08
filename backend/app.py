@@ -5,10 +5,7 @@ import os
 import json
 from werkzeug.utils import secure_filename
 import mimetypes
-from ReportGeneration import generate_expense_report
-    
 
-   
 app = Flask(__name__)
 CORS(app)
 
@@ -109,8 +106,6 @@ def upload_file():
             
             try:
                 json_data = response.json()
-                print(f"json data{json_data}")
-                generate_expense_report(json_data, "AIzaSyCEbn8bq8qCFT3nl0_7ft1ub_V-qehNLlQ")
             except ValueError as e:
                 print(f"Failed to parse JSON: {str(e)}")
                 return jsonify({'error': 'Invalid JSON response from Veryfi API'}), 500

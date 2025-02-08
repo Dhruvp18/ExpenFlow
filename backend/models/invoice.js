@@ -13,21 +13,28 @@ const invoiceSchema = new mongoose.Schema({
         totalAmount: Number,
         totalTax: Number
     },
-    items: [
-        {
-            discount: Number,
-            name: String,
-            quantity: Number,
-            rate: Number,
-            tax: Number,
-            total: Number
-        }
-    ],
+    items: [{
+        discount: Number,
+        name: String,
+        quantity: Number,
+        rate: Number,
+        tax: Number,
+        total: Number
+    }],
     total_items: Number,
     vendor: {
         category: mongoose.Schema.Types.Mixed,
         name: String,
         registration_number: mongoose.Schema.Types.Mixed
+    },
+    // New fields
+    category: { type: String, required: true },
+    subcategory: { type: String, required: true },
+    employeeLevel: { type: String, required: true },
+    status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected'],
+        default: 'pending'
     },
     filename: String
 }, { timestamps: true });
