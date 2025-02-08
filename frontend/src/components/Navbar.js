@@ -1,7 +1,7 @@
 import React from "react";
 import { Building, User } from "lucide-react";
 import LoginButton from "./LogInButton/LoginButton"; // Make sure the import path is correct
-
+import LogoutButton from "./LogOutButton/LogoutButton";
 const Navbar = () => {
   return (
     <nav className="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-purple-100 px-12">
