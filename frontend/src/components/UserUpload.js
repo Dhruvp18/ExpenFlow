@@ -1,9 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { X, Upload, FileText, Camera, Trash2 } from 'lucide-react';
 import Navbar from './Navbar';
+import React, { useState, useRef, useEffect } from 'react';
+import { X, Upload, FileText, Camera, Trash2 } from 'lucide-react';
+import { addInvoice } from '../services/api';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const ReceiptUploader = () => {
+  const { user } = useAuth0();
+    const userData = {
+        name: user?.name,
+        email: user?.email
+    };
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedLevel, setSelectedLevel] = useState('Executive Level (CEO, CTO, CFO, COO, CMO)');
   const [uploading, setUploading] = useState(false);
@@ -131,54 +138,59 @@ const ReceiptUploader = () => {
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
-  
+
     setUploading(true);
     setUploadError(null);
     setUploadResults(null);
-  
+
     const formData = new FormData();
-    selectedFiles.forEach(file => {
-      formData.append('file', file);
+    selectedFiles.forEach((file) => {
+        formData.append('file', file);
     });
-  
+
     try {
-      const response = await axios.post('http://localhost:5000/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Accept': 'application/json',
-        },
-        withCredentials: false,
-      });
-  
-      if (response.data.results) {
-        // Store the results in state
-        setUploadResults(response.data.results);
-        setSelectedFiles([]);
-        
-        // Reset the file input element
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+        const response = await axios.post('http://127.0.0.1:5000/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Accept': 'application/json',
+            },
+            withCredentials: false,
+        });
+
+        if (response.data.results) {
+            console.log('Upload Results:', response.data.results);
+            setUploadResults(response.data.results);
+
+            for (const result of response.data.results) {
+                try {
+                    const invoiceData = result.data;
+                    await addInvoice(userData, invoiceData);
+                    console.log(`Invoice ${invoiceData.bill.invoice_number} added successfully!`);
+                } catch (error) {
+                    console.error(`Failed to add invoice ${result.filename}:`, error);
+                }
+            }
+
+            setSelectedFiles([]);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        } else {
+            throw new Error('Invalid response format');
         }
-      } else {
-        throw new Error('Invalid response format');
-      }
     } catch (error) {
-      console.error('Upload failed:', error);
-      let errorMessage = 'Failed to upload files. Please try again.';
-  
-      if (error.response) {
-        // Server responded with error
-        errorMessage = error.response.data.error || `Server error: ${error.response.status}`;
-      } else if (error.request) {
-        // Request made but no response
-        errorMessage = 'No response from server. Please check if the server is running.';
-      }
-  
-      setUploadError(errorMessage);
+        console.error('Upload failed:', error);
+        let errorMessage = 'Failed to upload files. Please try again.';
+        if (error.response) {
+            errorMessage = error.response.data.error || `Server error: ${error.response.status}`;
+        } else if (error.request) {
+            errorMessage = 'No response from server. Please check if the server is running.';
+        }
+        setUploadError(errorMessage);
     } finally {
-      setUploading(false);
+        setUploading(false);
     }
-  };
+};
 
   const renderFilePreview = (file, index) => {
         const isImage = file.type.startsWith('image/');

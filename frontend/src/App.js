@@ -12,6 +12,7 @@ import { Orgdashboard } from "./components/org_dashboard";
 import Dashboard from "./components/UserDashboard";
 import Chatbot from "./components/Chatbot";
 import ReceiptUploader from "./components/UserUpload";
+import Test from "./components/test";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -39,6 +40,7 @@ const AppRoutes = () => {
       <Route path="/userDashboard" element={<Dashboard />} />
       <Route path="/userUpload" element={<ReceiptUploader />} />
       <Route path ='/chat-bot' element={<Chatbot/>}/>
+      <Route path="/test" element={<Test />} />
     </Routes>
   );
 };
