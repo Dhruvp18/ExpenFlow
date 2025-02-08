@@ -8,7 +8,7 @@ import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import "./App.css";
 import "./fonts.css";
 import Landing from "./components/Landing";
-import { Orgdashboard } from "./components/org_dashboard";
+import Orgdashboard from "./components/org_dashboard";
 import Dashboard from "./components/UserDashboard";
 import ReceiptUploader from "./components/UserUpload";
 
@@ -26,7 +26,13 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Orgdashboard /></ProtectedRoute> }/>
+      <Route
+        path="/org_dashboard"
+        element={
+            <Orgdashboard />
+        }
+      />
+
       <Route path="/userDashboard" element={<Dashboard />} />
       <Route path="/userUpload" element={<ReceiptUploader />} />
     </Routes>

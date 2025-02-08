@@ -14,7 +14,7 @@ const Navbar = () => {
           <div className="flex gap-8">
             <Link to="/userDashboard" className="text-purple-900 hover:text-purple-700 transition-colors">Dashboard</Link>  
             <Link to="/userUpload" className="text-purple-900 hover:text-purple-700 transition-colors">Upload</Link>  
-            <Link to="/dashboard" className="text-purple-900 hover:text-purple-700 transition-colors">Dashboard</Link>  
+            <Link to="/org_dashboard" className="text-purple-900 hover:text-purple-700 transition-colors">Dashboard</Link>  
             
           </div>
         </div>
