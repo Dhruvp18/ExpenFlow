@@ -4,18 +4,18 @@ import Autoplay from 'embla-carousel-autoplay';
 
 export const GameCard = ({ title, description, year, Icon, color }) => {
   return (
-    <div className={`game-cartridge flex-shrink-0 w-full md:w-80 bg-gradient-to-br ${color} p-6 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl mx-4`}>
+    <div className={`game-cartridge flex-shrink-0 w-full md:w-85  bg-gradient-to-b from-purple-300 to-purple-200 p-6 rounded-lg transform transition-all duration-150 hover:scale-105 hover:shadow-xl mx-4`}>
       <div className="bg-white/95 backdrop-blur-sm p-6 rounded-lg border border-gray-100 shadow-sm">
         <div className="flex items-center gap-4 mb-4">
           <div className="p-3 bg-gray-50 rounded-lg">
-            <Icon className="w-6 h-6 text-gray-700" />
+            <Icon className="w-6 h-6 text-purple-700" />
           </div>
-          <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+          <h3 className="text-xl font-bold text-purple-800">{title}</h3>
         </div>
-        <p className="text-gray-600 mb-4 leading-relaxed text-sm">{description}</p>
+        <p className="text-purple-800 mb-4 leading-relaxed text-sm">{description}</p>
         <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-          <span className="text-gray-700 font-bold">{year}</span>
-          <button className="px-4 py-2 bg-gray-100 rounded-full text-gray-700 hover:bg-gray-200 transition-colors text-sm">
+          {/* <span className="text-purple-700 font-bold">{year}</span> */}
+          <button className="px-4 py-2 bg-purple-50 rounded-full text-purple-700 hover:bg-gray-200 transition-colors text-sm">
             View Details
           </button>
         </div>
