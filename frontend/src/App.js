@@ -12,7 +12,7 @@ import { Orgdashboard } from "./components/org_dashboard";
 import Dashboard from "./components/UserDashboard";
 import Chatbot from "./components/Chatbot";
 import ReceiptUploader from "./components/UserUpload";
-import Test from "./components/test";
+import FetchUserInvoices from "./components/test";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
