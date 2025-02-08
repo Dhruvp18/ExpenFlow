@@ -1,0 +1,120 @@
+{
+    "Executive Level": {
+      "Travel Expenses": {
+        "Business Trips": "₹4,00,000 - ₹16,00,000 per month",
+        "Local Transportation": "₹30,000 - ₹60,000 per month",
+        "Mileage Reimbursement": "₹45,000 per month",
+        "Parking Fees & Tolls": "Fully covered"
+      },
+      "Accommodation": {
+        "Hotel Stays": "₹25,000 - ₹1,25,000 per night",
+        "Rental Allowance": "₹2,50,000 - ₹6,00,000 per month",
+        "Meals During Travel": "₹8,000 - ₹40,000 per day"
+      },
+      "Office Supplies and Equipment": {
+        "Work Tools": "Unlimited (as per requirement)",
+        "Home Office Setup": "Up to ₹8,00,000"
+      },
+      "Communication Expenses": {
+        "Mobile/Internet Bills": "Fully covered"
+      },
+      "Meals and Entertainment": {
+        "Client Meetings": "Up to ₹4,00,000 per month",
+        "Team Outings": "Up to ₹1,60,000 per month",
+        "Daily Meal Allowance": "₹8,000 - ₹24,000 per day"
+      }
+    },
+    "Senior Management": {
+      "Travel Expenses": {
+        "Business Trips": "₹1,50,000 - ₹4,00,000 per month",
+        "Local Transportation": "₹20,000 - ₹25,000 per month",
+        "Mileage Reimbursement": "₹30,000 per month",
+        "Parking Fees & Tolls": "Up to ₹10,000 per month"
+      },
+      "Accommodation": {
+        "Hotel Stays": "₹16,000 - ₹80,000 per night",
+        "Rental Allowance": "₹1,00,000 - ₹1,50,000 per month",
+        "Meals During Travel": "₹6,000 - ₹24,000 per day"
+      },
+      "Office Supplies and Equipment": {
+        "Work Tools": "Up to ₹4,00,000 per year",
+        "Home Office Setup": "Up to ₹4,00,000"
+      },
+      "Communication Expenses": {
+        "Mobile/Internet Bills": "Fully covered"
+      },
+      "Meals and Entertainment": {
+        "Client Meetings": "Up to ₹2,40,000 per month",
+        "Team Outings": "Up to ₹1,20,000 per month"
+      }
+    },
+    "Middle Management": {
+      "Travel Expenses": {
+        "Business Trips": "₹1,60,000 - ₹5,60,000 per month",
+        "Local Transportation": "₹16,000 - ₹20,000 per month",
+        "Mileage Reimbursement": "₹25,000 per month"
+      },
+      "Accommodation": {
+        "Rental Allowance": "₹80,000 - ₹90,000 per month"
+      },
+      "Office Supplies and Equipment": {
+        "Work Tools": "Up to ₹2,40,000 per year",
+        "Home Office Setup": "Up to ₹2,40,000"
+      },
+      "Communication Expenses": {
+        "Mobile/Internet Bills": "Fully covered"
+      },
+      "Meals and Entertainment": {
+        "Client Meetings": "Up to ₹1,60,000 per event"
+      }
+    },
+    "Lower Management": {
+      "Travel Expenses": {
+        "Business Trips": "₹80,000 - ₹4,00,000 per trip",
+        "Local Transportation": "₹12,000 - ₹15,000 per month",
+        "Mileage Reimbursement": "₹20,000 per month"
+      },
+      "Accommodation": {
+        "Rental Allowance": "₹40,000 - ₹50,000 per month"
+      },
+      "Office Supplies and Equipment": {
+        "Work Tools": "Up to ₹1,60,000 per year"
+      },
+      "Communication Expenses": {
+        "Mobile/Internet Bills": "Fully covered"
+      }
+    },
+    "Team Leads & Supervisors": {
+      "Travel Expenses": {
+        "Business Trips": "₹40,000 - ₹2,40,000 per trip",
+        "Local Transportation": "₹8,000 - ₹10,000 per month",
+        "Mileage Reimbursement": "₹15,000 per month"
+      },
+      "Accommodation": {
+        "Rental Allowance": "₹30,000 - ₹40,000 per month"
+      },
+      "Meals and Entertainment": {
+        "Client Meetings": "Up to ₹80,000 per event"
+      },
+      "Communication Expenses": {
+        "Mobile/Internet Bills": "Fully covered"
+      }
+    },
+    "Staff & Employees": {
+      "Travel Expenses": {
+        "Business Trips": "₹24,000 - ₹1,60,000 per trip",
+        "Local Transportation": "Up to ₹5,000 per month",
+        "Mileage Reimbursement": "₹10,000 per month"
+      },
+      "Accommodation": {
+        "Rental Allowance": "₹15,000 - ₹30,000 per month"
+      },
+      "Office Supplies and Equipment": {
+        "Work Tools": "Up to ₹80,000 per year"
+      },
+      "Communication Expenses": {
+        "Mobile/Internet Bills": "Fully covered"
+      }
+    }
+  }
+  
