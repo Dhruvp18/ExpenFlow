@@ -1,16 +1,16 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
-import json
 import os
+import json
 from werkzeug.utils import secure_filename
+import mimetypes
 
 app = Flask(__name__)
 CORS(app) 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 VERYFI_URL = "https://api.veryfi.com/api/v8/partner/documents"
@@ -83,31 +83,36 @@ def upload_file():
         
         print(f"Uploaded file: {filename}, Path: {filepath}, Size: {os.path.getsize(filepath)} bytes")
         
-        import mimetypes
         mime_type, _ = mimetypes.guess_type(filepath)
         if mime_type is None:
             mime_type = 'application/octet-stream'
         
         print(f"MIME Type: {mime_type}")
         
-        with open(filepath, 'rb') as image_file:
+        with open(filepath, 'rb') as uploaded_file:
             files = {
-                'file': (filename, image_file, mime_type)
+                'file': (filename, uploaded_file, mime_type)
             }
-            
-            # print(f"Headers: {HEADERS}")
             
             response = requests.post(VERYFI_URL, headers=HEADERS, files=files)
         
         os.remove(filepath)
         
-        json_data = json.loads(response.text)
-        receipt_data = extract_receipt_data(json_data)
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.text}")
+        
+        try:
+            json_data = response.json()
+        except ValueError as e:
+            print(f"Failed to parse JSON: {str(e)}")
+            return jsonify({'error': 'Invalid JSON response from Veryfi API'}), 500
         
         if response.status_code not in [200, 201]:
-            print(f"Veryfi API Error: {response.status_code}, Response: {response.text}")
             return jsonify({'error': 'OCR service error', 'details': response.text}), 500
         
+        receipt_data = extract_receipt_data(json_data)
+        if not receipt_data:
+            return jsonify({'error': 'Failed to extract receipt data'}), 500
         
         return jsonify(receipt_data)
     
@@ -116,5 +121,5 @@ def upload_file():
             os.remove(filepath)
         print(f"Exception occurred: {str(e)}")
         return jsonify({'error': str(e)}), 500
-    
+
 app.run(debug=True)
