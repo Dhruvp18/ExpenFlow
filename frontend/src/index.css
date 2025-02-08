@@ -1,0 +1,150 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.gameboy-body {
+  box-shadow: 
+    inset -8px -8px 12px rgba(0,0,0,0.1),
+    inset 8px 8px 12px rgba(255,255,255,0.8);
+}
+
+.rounded-pill {
+  border-radius: 999px;
+}
+
+.retro-scene {
+  background: repeating-linear-gradient(
+    skyblue 0%,
+    skyblue 60%,
+    #5a9e2a 60%,
+    #5a9e2a 100%
+  );
+}
+
+.mario-run {
+  width: 16px;
+  height: 16px;
+  background-color: red;
+  position: absolute;
+  bottom: 32px;
+  left: 20%;
+  animation: run 0.3s steps(2) infinite;
+  transition: left 0.1s ease-out, bottom 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mario-run.jumping {
+  animation: run 0.3s steps(2) infinite, jump 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #5a9e2a,
+    #5a9e2a 8px,
+    #4a8e1a 8px,
+    #4a8e1a 16px
+  );
+}
+
+.clouds-container {
+  position: absolute;
+  top: 10%;
+  left: 0;
+  right: 0;
+  height: 32px;
+  overflow: hidden;
+}
+
+.cloud {
+  position: absolute;
+  width: 32px;
+  height: 16px;
+  background: white;
+  border-radius: 8px;
+  opacity: 0.8;
+  animation: moveCloud 12s linear infinite;
+}
+
+.cloud:nth-child(1) { 
+  left: 20%; 
+  animation-delay: 0s;
+  transform: scale(1.2);
+}
+.cloud:nth-child(2) { 
+  left: 50%; 
+  animation-delay: -4s;
+  transform: scale(0.8);
+}
+.cloud:nth-child(3) { 
+  left: 80%; 
+  animation-delay: -8s;
+  transform: scale(1);
+}
+
+.coins {
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  height: 16px;
+}
+
+.coin {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 4px rgba(255, 215, 0, 0.6);
+}
+
+.coin:nth-child(1) { left: 30%; animation-delay: 0s; }
+.coin:nth-child(2) { left: 50%; animation-delay: 0.3s; }
+.coin:nth-child(3) { left: 70%; animation-delay: 0.6s; }
+
+.game-cartridge {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes run {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(8px); }
+}
+
+@keyframes jump {
+  0%, 100% { bottom: 32px; }
+  50% { bottom: 64px; }
+}
+
+@keyframes moveCloud {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+@keyframes spin {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.5); }
+  100% { transform: scale(1); }
+}
