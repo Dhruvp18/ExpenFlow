@@ -1,278 +1,238 @@
-import os
 import google.generativeai as genai
+import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email import encoders
+import pandas as pd
+from docx import Document
+from tabulate import tabulate
 
-# Set up Gemini API
-GOOGLE_API_KEY = "AIzaSyCEbn8bq8qCFT3nl0_7ft1ub_V-qehNLlQ"  # Replace with your actual API key
-genai.configure(api_key=GOOGLE_API_KEY)
+import json
+import yagmail  # Install via `pip install yagmail`
+from docx import Document
 
-# Define the sample data
-data = {
-    "results": [
-        # Employee 1
-        {
-            "employee_id": "E001",
-            "data": {
-                "bill": {
-                    "currency": "INR",
-                    "date": "2024-12-15 00:00:00",
-                    "invoice_number": "D271224-3723255",
-                    "payment_mode": "",
-                    "totalAmount": 114.99,
-                    "totalTax": 11.99
-                },
-                "items": [
-                    {
-                        "discount": 0,
-                        "name": "Diacraft Multicolor Rainbow Diya",
-                        "quantity": 1.0,
-                        "rate": 103.0,
-                        "tax": 0,
-                        "total": 103.0
-                    },
-                    {
-                        "discount": 0,
-                        "name": "Miscellaneous Charges",
-                        "quantity": 1.0,
-                        "rate": 11.99,
-                        "tax": 0,
-                        "total": 11.99
-                    }
-                ],
-                "total_items": 2,
-                "vendor": {
-                    "category": "Gifts",
-                    "name": "DS DROGHERIA SELLERS PRIVATE LIMITED",
-                    "registration_number": ""
-                }
-            },
-            "filename": "DOC-20241216-WA0008..pdf",
-            "fraud_flags": []
-        },
-        # Employee 2
-        {
-            "employee_id": "E002",
-            "data": {
-                "bill": {
-                    "currency": "INR",
-                    "date": "2020-02-19 17:28:00",
-                    "invoice_number": "533102007-004468",
-                    "payment_mode": "cash",
-                    "totalAmount": 393.0,
-                    "totalTax": 26.2
-                },
-                "items": [
-                    {
-                        "discount": 0,
-                        "name": "SYSKA 12W LED Bulb",
-                        "quantity": 1.0,
-                        "rate": 135.0,
-                        "tax": 0,
-                        "total": 135.0
-                    },
-                    {
-                        "discount": 0,
-                        "name": "LINC Blue Gel Pen",
-                        "quantity": 1.0,
-                        "rate": 30.8,
-                        "tax": 0,
-                        "total": 30.8
-                    },
-                    {
-                        "discount": 0,
-                        "name": "GOODKNIGHT GOLD -45ml",
-                        "quantity": 1.0,
-                        "rate": 128.0,
-                        "tax": 0,
-                        "total": 128.0
-                    },
-                    {
-                        "discount": 0,
-                        "name": "PAD LOCK 50M SPRAY C-",
-                        "quantity": 1.0,
-                        "rate": 99.0,
-                        "tax": 0,
-                        "total": 99.0
-                    }
-                ],
-                "total_items": 4,
-                "vendor": {
-                    "category": "Stationery",
-                    "name": "DMART KAKINADA",
-                    "registration_number": "L51900MH2000PLC126473"
-                }
-            },
-            "filename": "m_a0d9b30807ce-2020-02-19-20-04-07-000093.jpg",
-            "fraud_flags": ["Duplicate invoice number detected: 533102007-004468"]
-        },
-        # Employee 3
-        {
-            "employee_id": "E003",
-            "data": {
-                "bill": {
-                    "currency": "USD",
-                    "date": "2018-01-01 10:35:00",
-                    "invoice_number": "",
-                    "payment_mode": "",
-                    "totalAmount": 84.8,
-                    "totalTax": 8.0
-                },
-                "items": [
-                    {
-                        "discount": 0,
-                        "name": "Lorem Ipsum Items",
-                        "quantity": 1.0,
-                        "rate": 183.0,
-                        "tax": 0,
-                        "total": 183.0
-                    }
-                ],
-                "total_items": 1,
-                "vendor": {
-                    "category": "Miscellaneous",
-                    "name": "",
-                    "registration_number": ""
-                }
-            },
-            "filename": "360_F_182011806_mxcDzt9ckBYbGpxAne8o73DbyDHpXOe9.jpg",
-            "fraud_flags": [
-                "Missing or invalid invoice number",
-                "Missing or invalid vendor name",
-                "Invoice date is out of sequence"
-            ]
-        }
-    ]
-}
 
-# Define expense categories
-expense_categories = [
-    "Flight", "Hotel", "Stationery", "Travel", "Accommodation",
-    "Office Supplies and Equipment", "Training and Development",
-    "Health and Wellness", "Miscellaneous"
-]
-
-# Helper function to categorize items
-def categorize_item(item_name):
-    if "flight" in item_name.lower():
-        return "Flight"
-    elif "hotel" in item_name.lower():
-        return "Hotel"
-    elif "pen" in item_name.lower() or "notebook" in item_name.lower():
-        return "Stationery"
-    elif "travel" in item_name.lower():
-        return "Travel"
-    elif "laptop" in item_name.lower() or "printer" in item_name.lower():
-        return "Office Supplies and Equipment"
-    elif "training" in item_name.lower() or "course" in item_name.lower():
-        return "Training and Development"
-    elif "gym" in item_name.lower() or "medical" in item_name.lower():
-        return "Health and Wellness"
-    else:
-        return "Miscellaneous"
-
-# Initialize report structure
-total_reimbursement = {cat: 0 for cat in expense_categories}
-total_non_reimbursable = {cat: 0 for cat in expense_categories}
-employee_breakdown = {}
-employee_non_reimbursable = {}
-violations_summary = {}
-
-# Process data
-for result in data["results"]:
-    employee_id = result["employee_id"]
-    bill = result["data"]["bill"]
-    items = result["data"]["items"]
-    fraud_flags = result["fraud_flags"]
-
-    # Initialize employee breakdowns if not already present
-    if employee_id not in employee_breakdown:
-        employee_breakdown[employee_id] = {cat: 0 for cat in expense_categories}
-    if employee_id not in employee_non_reimbursable:
-        employee_non_reimbursable[employee_id] = {cat: {"amount": 0, "violations": []} for cat in expense_categories}
-    if employee_id not in violations_summary:
-        violations_summary[employee_id] = []
-
-    for item in items:
-        category = categorize_item(item["name"])
-        if fraud_flags:
-            total_non_reimbursable[category] += item["total"]
-            employee_non_reimbursable[employee_id][category]["amount"] += item["total"]
-            employee_non_reimbursable[employee_id][category]["violations"].extend(fraud_flags)
-            violations_summary[employee_id].extend(fraud_flags)
-        else:
-            total_reimbursement[category] += item["total"]
-            employee_breakdown[employee_id][category] += item["total"]
-
-# Remove duplicate violations
-for employee_id in violations_summary:
-    violations_summary[employee_id] = list(set(violations_summary[employee_id]))
-
-# Filter out zero-value categories
-def filter_zero_values(data_dict):
-    return {k: v for k, v in data_dict.items() if v > 0}
-
-total_reimbursement = filter_zero_values(total_reimbursement)
-total_non_reimbursable = filter_zero_values(total_non_reimbursable)
-for employee_id in employee_breakdown:
-    employee_breakdown[employee_id] = filter_zero_values(employee_breakdown[employee_id])
-for employee_id in employee_non_reimbursable:
-    employee_non_reimbursable[employee_id] = {k: v for k, v in employee_non_reimbursable[employee_id].items() if v["amount"] > 0}
-
-# Generate natural language summary using Gemini API
-def generate_natural_language_summary(report_data):
-    model = genai.GenerativeModel('gemini-pro')
-    prompt = f"""
-    Generate a concise and professional summary of the following expense report data:
-    Total Reimbursement by Category: {report_data['total_reimbursement']}
-    Total Non-Reimbursable Amounts by Category: {report_data['total_non_reimbursable']}
-    Employee-wise Breakdown of Reimbursable Amounts: {report_data['employee_breakdown']}
-    Employee-wise Breakdown of Non-Reimbursable Amounts: {report_data['employee_non_reimbursable']}
-    Employee-wise Violations: {report_data['violations_summary']}
+def generate_expense_report(json_data, api_key):
     """
-    response = model.generate_content(prompt)
-    return response.text
+    Generate two professional expense reports (for employees and HR) using Gemini API,
+    export them as .docx files, and send them via email using yagmail.
+    
+    Args:
+        json_data (dict or list): The JSON data for receipts.
+        api_key (str): API key for the Gemini model.
+    
+    Returns:
+        None: Prints both reports directly and sends them via email.
+    """
+    # Set up Gemini API
+    genai.configure(api_key=api_key)
 
-# Prepare report data for summarization
-report_data = {
-    "total_reimbursement": total_reimbursement,
-    "total_non_reimbursable": total_non_reimbursable,
-    "employee_breakdown": employee_breakdown,
-    "employee_non_reimbursable": employee_non_reimbursable,
-    "violations_summary": violations_summary
-}
+    # Define expense categories
+    expense_categories = [
+        "Flight", "Hotel", "Stationery", "Travel", "Accommodation",
+        "Office Supplies and Equipment", "Training and Development",
+        "Health and Wellness", "Miscellaneous"
+    ]
 
-# Generate natural language summary
-natural_language_summary = generate_natural_language_summary(report_data)
+    # Helper function to categorize items
+    def categorize_item(item_name):
+        item_name_lower = item_name.lower()
+        if "flight" in item_name_lower:
+            return "Flight"
+        elif "hotel" in item_name_lower:
+            return "Hotel"
+        elif "pen" in item_name_lower or "notebook" in item_name_lower:
+            return "Stationery"
+        elif "travel" in item_name_lower:
+            return "Travel"
+        elif "laptop" in item_name_lower or "printer" in item_name_lower:
+            return "Office Supplies and Equipment"
+        elif "training" in item_name_lower or "course" in item_name_lower:
+            return "Training and Development"
+        elif "gym" in item_name_lower or "medical" in item_name_lower:
+            return "Health and Wellness"
+        else:
+            return "Miscellaneous"
 
-# Print report
-print("1. Total Reimbursement by Expense Type")
-for category, amount in total_reimbursement.items():
-    print(f"{category}: {amount}")
+    # Initialize report structure
+    total_reimbursement = {cat: 0 for cat in expense_categories}
+    total_non_reimbursable = {cat: 0 for cat in expense_categories}
+    employee_breakdown = {}
+    employee_non_reimbursable = {}
+    violations_summary = {}
 
-print("\n2. Employee-wise Breakdown of Reimbursable Amounts")
-for employee_id, breakdown in employee_breakdown.items():
-    print(f"Employee {employee_id}")
-    for category, amount in breakdown.items():
-        print(f"{category}: {amount}")
+    # Validate json_data structure
+    if isinstance(json_data, dict):
+        json_data = [json_data]  # Convert single dictionary to list
+    elif not isinstance(json_data, list):
+        raise ValueError("json_data must be a dictionary or a list of dictionaries.")
 
-print("\n3. Total Non-Reimbursable Amounts by Category")
-for category, amount in total_non_reimbursable.items():
-    print(f"{category}: {amount}")
+    # Process data
+    for receipt in json_data:
+        if not isinstance(receipt, dict):
+            print(f"Skipping invalid receipt (not a dictionary): {receipt}")
+            continue
 
-print("\n4. Employee-wise Breakdown of Non-Reimbursable Amounts")
-for employee_id, breakdown in employee_non_reimbursable.items():
-    print(f"Employee {employee_id}")
-    for category, details in breakdown.items():
-        print(f"{category}: {details['amount']} (Violations: {', '.join(details['violations'])})")
+        # Extract relevant fields with error handling
+        vendor_name = receipt.get("vendor", {}).get("name", "N/A") if isinstance(receipt.get("vendor"), dict) else "N/A"
+        invoice_number = receipt.get("invoice_number", "N/A")
+        total_amount = receipt.get("total", 0) or 0  # Ensure it's not None
+        line_items = receipt.get("line_items", [])
+        fraud_flags = receipt.get("meta", {}).get("fraud_flags", []) if isinstance(receipt.get("meta"), dict) else []
+        employee_id = receipt.get("reference_number", "Unknown")
 
-print("\n5. Overall Summary")
-total_reimbursed = sum(total_reimbursement.values())
-total_not_reimbursed = sum(total_non_reimbursable.values())
-print(f"Total Reimbursed: {total_reimbursed}")
-print(f"Total Not Reimbursed: {total_not_reimbursed}")
+        # Initialize employee breakdowns if not already present
+        if employee_id not in employee_breakdown:
+            employee_breakdown[employee_id] = {cat: 0 for cat in expense_categories}
+        if employee_id not in employee_non_reimbursable:
+            employee_non_reimbursable[employee_id] = {
+                cat: {"amount": 0, "violations": []} for cat in expense_categories
+            }
+        if employee_id not in violations_summary:
+            violations_summary[employee_id] = []
 
-print("\n6. Employee-wise Violations")
-for employee_id, violations in violations_summary.items():
-    print(f"Employee {employee_id}: {', '.join(violations) if violations else 'No violations'}")
+        # Process line items
+        for item in line_items:
+            if not isinstance(item, dict):
+                print(f"Skipping invalid line item (not a dictionary): {item}")
+                continue
 
-print("\n7. Overall Summary")
-print(natural_language_summary)
+            item_name = item.get("description", "Unknown Item")
+            item_total = item.get("total", 0) or 0  # Ensure it's not None
+            category = categorize_item(item_name)
+
+            # Use Gemini API to detect fraud flags
+            def detect_fraud(item_description, total_amount, vendor_name):
+                model = genai.GenerativeModel('gemini-pro')
+                prompt = f"""
+                Analyze the following expense for potential fraud or policy violations:
+                - Item Description: {item_description}
+                - Total Amount: {total_amount}
+                - Vendor Name: {vendor_name}
+                
+                Return a JSON object without bold with the following keys:
+                - "is_fraud": true/false (whether this expense is potentially fraudulent)
+                - "reason": Explanation of why it might be fraudulent (if applicable)
+                """
+                response = model.generate_content(prompt)
+                try:
+                    return json.loads(response.text)
+                except json.JSONDecodeError:
+                    return {"is_fraud": False, "reason": "Unable to determine fraud status."}
+
+            fraud_analysis = detect_fraud(item_name, item_total, vendor_name)
+            if fraud_analysis["is_fraud"]:
+                fraud_flags.append(fraud_analysis["reason"])
+
+            if fraud_flags:
+                total_non_reimbursable[category] += item_total
+                employee_non_reimbursable[employee_id][category]["amount"] += item_total
+                employee_non_reimbursable[employee_id][category]["violations"].extend(fraud_flags)
+                violations_summary[employee_id].extend(fraud_flags)
+            else:
+                total_reimbursement[category] += item_total
+                employee_breakdown[employee_id][category] += item_total
+
+    # Remove duplicate violations
+    for employee_id in violations_summary:
+        violations_summary[employee_id] = list(set(violations_summary[employee_id]))
+
+    # Filter out zero-value categories
+    def filter_zero_values(data_dict):
+        return {k: v for k, v in data_dict.items() if v > 0}
+
+    total_reimbursement = filter_zero_values(total_reimbursement)
+    total_non_reimbursable = filter_zero_values(total_non_reimbursable)
+    for employee_id in employee_breakdown:
+        employee_breakdown[employee_id] = filter_zero_values(employee_breakdown[employee_id])
+    for employee_id in employee_non_reimbursable:
+        employee_non_reimbursable[employee_id] = {
+            k: v for k, v in employee_non_reimbursable[employee_id].items() if v["amount"] > 0
+        }
+
+    # Prepare report data for summarization
+    report_data = {
+        "total_reimbursement": total_reimbursement,
+        "total_non_reimbursable": total_non_reimbursable,
+        "employee_breakdown": employee_breakdown,
+        "employee_non_reimbursable": employee_non_reimbursable,
+        "violations_summary": violations_summary
+    }
+
+    # Generate natural language summaries using Gemini API
+    def generate_employee_report(report_data):
+        model = genai.GenerativeModel('gemini-pro')
+        prompt = f"""
+        Generate a concise and professional expense report for an employee based on the following data:
+        - Total Reimbursement by Category: {report_data['total_reimbursement']}
+        - Employee-wise Breakdown of Reimbursable Amounts: {report_data['employee_breakdown']}
+        - Violations Summary: {report_data['violations_summary']}
+        
+        Include only essential details and avoid technical jargon.
+        """
+        response = model.generate_content(prompt)
+        return response.text
+
+    def generate_hr_report(report_data):
+        model = genai.GenerativeModel('gemini-pro')
+        prompt = f"""
+        Generate a detailed and professional expense report for HR based on the following data:
+        - Total Reimbursement by Category: {report_data['total_reimbursement']}
+        - Total Non-Reimbursable Amounts by Category: {report_data['total_non_reimbursable']}
+        - Employee-wise Breakdown of Reimbursable Amounts: {report_data['employee_breakdown']}
+        - Employee-wise Breakdown of Non-Reimbursable Amounts: {report_data['employee_non_reimbursable']}
+        - Employee-wise Violations: {report_data['violations_summary']}
+        
+        Highlight any compliance issues, flagged items, and provide recommendations for future audits.
+        """
+        response = model.generate_content(prompt)
+        return response.text
+
+    # Generate reports
+    employee_report_text = generate_employee_report(report_data)
+    hr_report_text = generate_hr_report(report_data)
+
+    # Export reports to .docx format
+    def export_to_docx(report_text, filename):
+        doc = Document()
+        doc.add_heading("Expense Report", level=1)
+        doc.add_paragraph(report_text)
+        doc.save(filename)
+
+    export_to_docx(employee_report_text, "employee_report.docx")
+    export_to_docx(hr_report_text, "hr_report.docx")
+
+    # Send emails with attachments using yagmail
+    def send_email(sender_email, recipient_email, subject, body, attachment_path):
+        # Initialize yagmail SMTP connection
+        yag = yagmail.SMTP(sender_email, "btjr mnzc ozto ntcg")  # Replace with your App Password
+
+        # Send email with attachment
+        yag.send(
+            to=recipient_email,
+            subject=subject,
+            contents=body,
+            attachments=attachment_path
+        )
+
+    # Send HR report
+    send_email(
+        sender_email="virajv2005@gmail.com",
+        recipient_email="vrvora_b23@ce.vjti.ac.in",
+        subject="MONTHLY COMPANY EXPENSE REPORT FOR HR",
+        body="Please find attached the monthly expense report for HR.",
+        attachment_path="hr_report.docx"
+    )
+
+    # Send Employee report
+    send_email(
+        sender_email="virajv2005@gmail.com",
+        recipient_email="knrambhia_b23@ce.vjti.ac.in",
+        subject="MONTHLY COMPANY EXPENSE REPORT FOR EMPLOYEE",
+        body="Please find attached the monthly expense report for your review.",
+        attachment_path="employee_report.docx"
+    )
+
+    print("\n--- Reports Generated and Sent Successfully ---\n")

@@ -5,9 +5,13 @@ import os
 import json
 from werkzeug.utils import secure_filename
 import mimetypes
-from datetime import datetime, timedelta
+from ReportGeneration import generate_expense_report
+    
 
+   
 app = Flask(__name__)
+CORS(app)
+
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -16,8 +20,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 VERYFI_URL = "https://api.veryfi.com/api/v8/partner/documents"
 HEADERS = {
     'Accept': 'application/json',
-    'CLIENT-ID': 'vrfUf0oDw8PB7nVgBPfh0WUzmLHOiNE1pbn5pgf',
-    'AUTHORIZATION': 'apikey pseudocause30:6ef1bd869175c48ca0461148218df858'
+    'CLIENT-ID': 'vrfnRVLfK8XO0YHSH0xIeXDdpC1eymliVdL7TKc',
+    'AUTHORIZATION': 'apikey virajvora2409:7405dd36149e92e3954beb21ed4a936a'
 }
 
 def allowed_file(filename):
@@ -105,6 +109,8 @@ def upload_file():
             
             try:
                 json_data = response.json()
+                print(f"json data{json_data}")
+                generate_expense_report(json_data, "AIzaSyCEbn8bq8qCFT3nl0_7ft1ub_V-qehNLlQ")
             except ValueError as e:
                 print(f"Failed to parse JSON: {str(e)}")
                 return jsonify({'error': 'Invalid JSON response from Veryfi API'}), 500
