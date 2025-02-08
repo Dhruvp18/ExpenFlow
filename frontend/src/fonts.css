@@ -1,6 +1,13 @@
 @font-face {
-    font-family: "mario";
-    src: url("./assets/fonts/mario.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
-  }
+  font-family: "mario";
+  src: url("./assets/fonts/mario.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "mario2";
+  src: url("./assets/fonts/mario.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
