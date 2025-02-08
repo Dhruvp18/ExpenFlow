@@ -1,0 +1,250 @@
+{
+    "results": [
+        {
+            "data": {
+                "bill": {
+                    "currency": "INR",
+                    "date": "2024-12-15 00:00:00",
+                    "invoice_number": "D271224-3723255",
+                    "payment_mode": "",
+                    "totalAmount": 114.99,
+                    "totalTax": 11.99
+                },
+                "items": [
+                    {
+                        "discount": 0,
+                        "name": "Diacraft Multicolor Rainbow Diya 1 69120040\n0.0%\n0.0%\n0.0\n0.0\n0.0\n0.0\npack\n4 pcs",
+                        "quantity": 1.0,
+                        "rate": 199.0,
+                        "tax": 0,
+                        "total": 103.0
+                    },
+                    {
+                        "discount": 0,
+                        "name": "0.0\n0.0\n0.0",
+                        "quantity": 1.0,
+                        "rate": 103.0,
+                        "tax": 0,
+                        "total": 103.0
+                    },
+                    {
+                        "discount": 0,
+                        "name": "0.0%\n0.0%\n0.0\n0.0\n0.0",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 11.99,
+                        "total": 11.99
+                    }
+                ],
+                "total_items": 3,
+                "vendor": {
+                    "category": "",
+                    "name": "DS DROGHERIA SELLERS PRIVATE LIMITED",
+                    "registration_number": ""
+                }
+            },
+            "filename": "DOC-20241216-WA0008..pdf",
+            "fraud_flags": []
+        },
+        {
+            "data": {
+                "bill": {
+                    "currency": "INR",
+                    "date": "2020-02-19 17:28:00",
+                    "invoice_number": "533102007-004468",
+                    "payment_mode": "cash",
+                    "totalAmount": 393.0,
+                    "totalTax": 26.2
+                },
+                "items": [
+                    {
+                        "discount": 0,
+                        "name": "SYSKA 12W 822 8500 K-",
+                        "quantity": 1.0,
+                        "rate": 135.0,
+                        "tax": 0,
+                        "total": 135.0
+                    },
+                    {
+                        "discount": 0,
+                        "name": "LINC DCEAN BLU GEL P-",
+                        "quantity": 1.0,
+                        "rate": 30.8,
+                        "tax": 0,
+                        "total": 30.8
+                    },
+                    {
+                        "discount": 0,
+                        "name": "GOODKNIGHT GOLD -45ml",
+                        "quantity": 1.0,
+                        "rate": 128.0,
+                        "tax": 0,
+                        "total": 128.0
+                    },
+                    {
+                        "discount": 0,
+                        "name": "PAD LOCK 50M SPRAY C-",
+                        "quantity": 1.0,
+                        "rate": 99.0,
+                        "tax": 0,
+                        "total": 99.0
+                    }
+                ],
+                "total_items": 4,
+                "vendor": {
+                    "category": "Grocery",
+                    "name": "DMART KAKINADA",
+                    "registration_number": "L51900MH2000PLC126473"
+                }
+            },
+            "filename": "m_a0d9b30807ce-2020-02-19-20-04-07-000093.jpg",
+            "fraud_flags": []
+        },
+        {
+            "data": {
+                "bill": {
+                    "currency": "USD",
+                    "date": "2018-01-01 10:35:00",
+                    "invoice_number": "",
+                    "payment_mode": "",
+                    "totalAmount": 84.8,
+                    "totalTax": 8.0
+                },
+                "items": [
+                    {
+                        "discount": 0,
+                        "name": "Lorem Ipsum, Dolor",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 0,
+                        "total": 0
+                    },
+                    {
+                        "discount": 0,
+                        "name": "Lorem",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 0,
+                        "total": 6.5
+                    },
+                    {
+                        "discount": 0,
+                        "name": "Ipsum",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 0,
+                        "total": 7.5
+                    },
+                    {
+                        "discount": 0,
+                        "name": "Dolor Sit",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 0,
+                        "total": 48.0
+                    },
+                    {
+                        "discount": 0,
+                        "name": "Amet",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 0,
+                        "total": 9.3
+                    },
+                    {
+                        "discount": 0,
+                        "name": "Consectetur",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 0,
+                        "total": 11.9
+                    },
+                    {
+                        "discount": 0,
+                        "name": "Adipiscing Elit",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 0,
+                        "total": 1.2
+                    },
+                    {
+                        "discount": 0,
+                        "name": "Sed Do",
+                        "quantity": 1.0,
+                        "rate": 0,
+                        "tax": 0,
+                        "total": 0.4
+                    }
+                ],
+                "total_items": 8,
+                "vendor": {
+                    "category": "Grocery",
+                    "name": "",
+                    "registration_number": ""
+                }
+            },
+            "filename": "360_F_182011806_mxcDzt9ckBYbGpxAne8o73DbyDHpXOe9.jpg",
+            "fraud_flags": [
+                "Missing or invalid invoice number",
+                "Missing or invalid vendor name",
+                "Invoice date is out of sequence"
+            ]
+        },
+        {
+            "data": {
+                "bill": {
+                    "currency": "INR",
+                    "date": "2020-02-19 17:28:00",
+                    "invoice_number": "533102007-004468",
+                    "payment_mode": "cash",
+                    "totalAmount": 393.0,
+                    "totalTax": 26.2
+                },
+                "items": [
+                    {
+                        "discount": 0,
+                        "name": "SYSKA 12W 822 8500 K-",
+                        "quantity": 1.0,
+                        "rate": 135.0,
+                        "tax": 0,
+                        "total": 135.0
+                    },
+                    {
+                        "discount": 0,
+                        "name": "LINC DCEAN BLU GEL P-",
+                        "quantity": 1.0,
+                        "rate": 30.8,
+                        "tax": 0,
+                        "total": 30.8
+                    },
+                    {
+                        "discount": 0,
+                        "name": "GOODKNIGHT GOLD -45ml",
+                        "quantity": 1.0,
+                        "rate": 128.0,
+                        "tax": 0,
+                        "total": 128.0
+                    },
+                    {
+                        "discount": 0,
+                        "name": "PAD LOCK 50M SPRAY C-",
+                        "quantity": 1.0,
+                        "rate": 99.0,
+                        "tax": 0,
+                        "total": 99.0
+                    }
+                ],
+                "total_items": 4,
+                "vendor": {
+                    "category": "Grocery",
+                    "name": "DMART KAKINADA",
+                    "registration_number": "L51900MH2000PLC126473"
+                }
+            },
+            "filename": "m_a0d9b30807ce-2020-02-19-20-04-07-000093.jpg",
+            "fraud_flags": [
+                "Duplicate invoice number detected: 533102007-004468"
+            ]
+        }
+    ]
+}
