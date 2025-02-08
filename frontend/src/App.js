@@ -10,6 +10,7 @@ import "./fonts.css";
 import Landing from "./components/Landing";
 import { Orgdashboard } from "./components/org_dashboard";
 import Dashboard from "./components/UserDashboard";
+import Chatbot from "./components/Chatbot";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -34,6 +35,7 @@ const AppRoutes = () => {
         }
       />
       <Route path="/d" element={<Dashboard />} />
+      <Route path="/chatbot" element={<Chatbot/>}/>
     </Routes>
   );
 };
