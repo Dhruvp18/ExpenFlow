@@ -67,58 +67,65 @@ def upload_file():
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
     
-    file = request.files['file']
+    files = request.files.getlist('file')
+    if not files or all(file.filename == '' for file in files):
+        return jsonify({'error': 'No files selected'}), 400
     
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
+    results = []
     
-    if not allowed_file(file.filename):
-        return jsonify({'error': f'File type not allowed: {file.filename}'}), 400
-    
-    try:
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-        
-        print(f"Uploaded file: {filename}, Path: {filepath}, Size: {os.path.getsize(filepath)} bytes")
-        
-        mime_type, _ = mimetypes.guess_type(filepath)
-        if mime_type is None:
-            mime_type = 'application/octet-stream'
-        
-        print(f"MIME Type: {mime_type}")
-        
-        with open(filepath, 'rb') as uploaded_file:
-            files = {
-                'file': (filename, uploaded_file, mime_type)
-            }
-            
-            response = requests.post(VERYFI_URL, headers=HEADERS, files=files)
-        
-        os.remove(filepath)
-        
-        print(f"Status Code: {response.status_code}")
-        print(f"Response: {response.text}")
+    for file in files:
+        if not allowed_file(file.filename):
+            return jsonify({'error': f'File type not allowed: {file.filename}'}), 400
         
         try:
-            json_data = response.json()
-        except ValueError as e:
-            print(f"Failed to parse JSON: {str(e)}")
-            return jsonify({'error': 'Invalid JSON response from Veryfi API'}), 500
-        
-        if response.status_code not in [200, 201]:
-            return jsonify({'error': 'OCR service error', 'details': response.text}), 500
-        
-        receipt_data = extract_receipt_data(json_data)
-        if not receipt_data:
-            return jsonify({'error': 'Failed to extract receipt data'}), 500
-        
-        return jsonify(receipt_data)
-    
-    except Exception as e:
-        if os.path.exists(filepath):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            print(f"Uploaded file: {filename}, Path: {filepath}, Size: {os.path.getsize(filepath)} bytes")
+            
+            mime_type, _ = mimetypes.guess_type(filepath)
+            if mime_type is None:
+                mime_type = 'application/octet-stream'
+            
+            print(f"MIME Type: {mime_type}")
+            
+            with open(filepath, 'rb') as uploaded_file:
+                files_dict = {
+                    'file': (filename, uploaded_file, mime_type)
+                }
+                
+                response = requests.post(VERYFI_URL, headers=HEADERS, files=files_dict)
+            
             os.remove(filepath)
-        print(f"Exception occurred: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+            
+            print(f"Status Code: {response.status_code}")
+            print(f"Response: {response.text}")
+            
+            try:
+                json_data = response.json()
+            except ValueError as e:
+                print(f"Failed to parse JSON: {str(e)}")
+                return jsonify({'error': 'Invalid JSON response from Veryfi API'}), 500
+            
+            if response.status_code not in [200, 201]:
+                return jsonify({'error': 'OCR service error', 'details': response.text}), 500
+            
+            receipt_data = extract_receipt_data(json_data)
+            if not receipt_data:
+                return jsonify({'error': 'Failed to extract receipt data'}), 500
+            
+            results.append({
+                'filename': filename,
+                'data': receipt_data
+            })
+        
+        except Exception as e:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            print(f"Exception occurred: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+    
+    return jsonify({'results': results})
 
 app.run(debug=True)
