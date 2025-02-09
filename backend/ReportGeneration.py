@@ -134,17 +134,14 @@ def generate_expense_report(json_data, api_key):
     Returns:
         None: Prints both reports directly and sends them via email.
     """
-    # Set up Gemini API
     genai.configure(api_key=api_key)
 
-    # Define expense categories
     expense_categories = [
         "Flight", "Hotel", "Stationery", "Travel", "Accommodation",
         "Office Supplies and Equipment", "Training and Development",
         "Health and Wellness", "Miscellaneous"
     ]
 
-    # Helper function to categorize items
     def categorize_item(item_name):
         item_name_lower = item_name.lower()
         if "flight" in item_name_lower:
@@ -164,34 +161,29 @@ def generate_expense_report(json_data, api_key):
         else:
             return "Miscellaneous"
 
-    # Initialize report structure
     total_reimbursement = {cat: 0 for cat in expense_categories}
     total_non_reimbursable = {cat: 0 for cat in expense_categories}
     employee_breakdown = {}
     employee_non_reimbursable = {}
     violations_summary = {}
 
-    # Validate json_data structure
     if isinstance(json_data, dict):
-        json_data = [json_data]  # Convert single dictionary to list
+        json_data = [json_data]  
     elif not isinstance(json_data, list):
         raise ValueError("json_data must be a dictionary or a list of dictionaries.")
 
-    # Process data
     for receipt in json_data:
         if not isinstance(receipt, dict):
             print(f"Skipping invalid receipt (not a dictionary): {receipt}")
             continue
 
-        # Extract relevant fields with error handling
         vendor_name = receipt.get("vendor", {}).get("name", "N/A") if isinstance(receipt.get("vendor"), dict) else "N/A"
         invoice_number = receipt.get("invoice_number", "N/A")
-        total_amount = receipt.get("total", 0) or 0  # Ensure it's not None
+        total_amount = receipt.get("total", 0) or 0  
         line_items = receipt.get("line_items", [])
         fraud_flags = receipt.get("meta", {}).get("fraud_flags", []) if isinstance(receipt.get("meta"), dict) else []
         employee_id = receipt.get("reference_number", "Unknown")
 
-        # Initialize employee breakdowns if not already present
         if employee_id not in employee_breakdown:
             employee_breakdown[employee_id] = {cat: 0 for cat in expense_categories}
         if employee_id not in employee_non_reimbursable:
@@ -201,17 +193,15 @@ def generate_expense_report(json_data, api_key):
         if employee_id not in violations_summary:
             violations_summary[employee_id] = []
 
-        # Process line items
         for item in line_items:
             if not isinstance(item, dict):
                 print(f"Skipping invalid line item (not a dictionary): {item}")
                 continue
 
             item_name = item.get("description", "Unknown Item")
-            item_total = item.get("total", 0) or 0  # Ensure it's not None
+            item_total = item.get("total", 0) or 0  
             category = categorize_item(item_name)
 
-            # Use Gemini API to detect fraud flags
             def detect_fraud(item_description, total_amount, vendor_name):
                 model = genai.GenerativeModel('gemini-pro')
                 prompt = f"""
@@ -242,11 +232,9 @@ def generate_expense_report(json_data, api_key):
                 total_reimbursement[category] += item_total
                 employee_breakdown[employee_id][category] += item_total
 
-    # Remove duplicate violations
     for employee_id in violations_summary:
         violations_summary[employee_id] = list(set(violations_summary[employee_id]))
 
-    # Filter out zero-value categories
     def filter_zero_values(data_dict):
         return {k: v for k, v in data_dict.items() if v > 0}
 
@@ -259,7 +247,6 @@ def generate_expense_report(json_data, api_key):
             k: v for k, v in employee_non_reimbursable[employee_id].items() if v["amount"] > 0
         }
 
-    # Prepare report data for summarization
     report_data = {
         "total_reimbursement": total_reimbursement,
         "total_non_reimbursable": total_non_reimbursable,
@@ -268,24 +255,20 @@ def generate_expense_report(json_data, api_key):
         "violations_summary": violations_summary
     }
 
-    # Generate natural language summaries using Gemini API
     def generate_employee_report(report_data, employee_id):
         model = genai.GenerativeModel('gemini-pro')
         reimbursable = report_data['employee_breakdown'].get(employee_id, {})
         non_reimbursable = report_data['employee_non_reimbursable'].get(employee_id, {})
         violations = report_data['violations_summary'].get(employee_id, [])
 
-        # Create a table for reimbursements
         reimbursement_table = [["Category", "Amount"]]
         for category, amount in reimbursable.items():
             reimbursement_table.append([category, f"₹{amount}"])
 
-        # Create a table for non-reimbursable amounts
         non_reimbursable_table = [["Category", "Amount", "Violations"]]
         for category, details in non_reimbursable.items():
             non_reimbursable_table.append([category, f"₹{details['amount']}", ", ".join(details['violations'])])
 
-        # Create a table for violations with policy details
         violations_table = [["Violation", "Policy"]]
         for violation in violations:
             policy = "Policy not found"
@@ -297,7 +280,6 @@ def generate_expense_report(json_data, api_key):
                             break
             violations_table.append([violation, policy])
 
-        # Generate textual summary
         prompt = f"""
         Generate a concise and professional expense report for an employee with ID {employee_id}.
         Include the following details:
@@ -316,23 +298,19 @@ def generate_expense_report(json_data, api_key):
     def generate_hr_report(report_data):
         model = genai.GenerativeModel('gemini-pro')
 
-        # Create a table for total reimbursements
         total_reimbursement_table = [["Category", "Amount"]]
         for category, amount in report_data['total_reimbursement'].items():
             total_reimbursement_table.append([category, f"₹{amount}"])
 
-        # Create a table for total non-reimbursable amounts
         total_non_reimbursable_table = [["Category", "Amount"]]
         for category, amount in report_data['total_non_reimbursable'].items():
             total_non_reimbursable_table.append([category, f"₹{amount}"])
 
-        # Create a table for employee-wise reimbursements
         employee_reimbursement_table = [["Employee ID", "Category", "Amount"]]
         for employee_id, categories in report_data['employee_breakdown'].items():
             for category, amount in categories.items():
                 employee_reimbursement_table.append([employee_id, category, f"₹{amount}"])
 
-        # Create a table for employee-wise non-reimbursable amounts
         employee_non_reimbursable_table = [["Employee ID", "Category", "Amount", "Violations"]]
         for employee_id, categories in report_data['employee_non_reimbursable'].items():
             for category, details in categories.items():
@@ -340,7 +318,6 @@ def generate_expense_report(json_data, api_key):
                     [employee_id, category, f"₹{details['amount']}", ", ".join(details['violations'])]
                 )
 
-        # Create a table for violations with policy details
         violations_table = [["Employee ID", "Violation", "Policy"]]
         for employee_id, violations in report_data['violations_summary'].items():
             for violation in violations:
@@ -353,7 +330,6 @@ def generate_expense_report(json_data, api_key):
                                 break
                 violations_table.append([employee_id, violation, policy])
 
-        # Generate textual summary
         prompt = f"""
         Generate a detailed and professional expense report for HR.
         Include the following details:
@@ -373,14 +349,12 @@ def generate_expense_report(json_data, api_key):
         response = model.generate_content(prompt)
         return response.text
 
-    # Generate reports
     employee_reports = {}
     for employee_id in employee_breakdown.keys():
         employee_reports[employee_id] = generate_employee_report(report_data, employee_id)
 
     hr_report_text = generate_hr_report(report_data)
 
-    # Export reports to .docx format
     def export_to_docx(report_text, filename):
         doc = Document()
         doc.add_heading("Expense Report", level=1)
@@ -392,11 +366,8 @@ def generate_expense_report(json_data, api_key):
 
     export_to_docx(hr_report_text, "hr_report.docx")
 
-    # Send emails with attachments using yagmail
     def send_email(sender_email, recipient_email, subject, body, attachment_path):
-        # Initialize yagmail SMTP connection
-        yag = yagmail.SMTP(sender_email, "btjr mnzc ozto ntcg")  # Replace with your App Password
-        # Send email with attachment
+        yag = yagmail.SMTP(sender_email, "btjr mnzc ozto ntcg") 
         yag.send(
             to=recipient_email,
             subject=subject,
@@ -404,7 +375,6 @@ def generate_expense_report(json_data, api_key):
             attachments=attachment_path
         )
 
-    # Send HR report
     send_email(
         sender_email="virajv2005@gmail.com",
         recipient_email="vrvora_b23@ce.vjti.ac.in",
@@ -413,11 +383,10 @@ def generate_expense_report(json_data, api_key):
         attachment_path="hr_report.docx"
     )
 
-    # Send Employee reports
     for employee_id, report_text in employee_reports.items():
         send_email(
             sender_email="virajv2005@gmail.com",
-            recipient_email="vrvora_b23@ce.vjti.ac.in",  # Replace with actual employee email logic
+            recipient_email="vrvora_b23@ce.vjti.ac.in",  
             subject="MONTHLY COMPANY EXPENSE REPORT FOR EMPLOYEE",
             body="Please find attached the monthly expense report for your review.",
             attachment_path=f"employee_report_{employee_id}.docx"

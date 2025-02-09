@@ -212,13 +212,13 @@ def detect_fraud(json_data):
     Process a large JSON file containing multiple bills.
     Adds 'flags' and 'status' fields to each bill in the JSON.
     """
-    if isinstance(json_data, list):  # If the input is a list of bills
+    if isinstance(json_data, list):  
         processed_data = []
         for bill in json_data:
             processed_bill = fraud(bill)
             processed_data.append(processed_bill)
         return processed_data
-    elif isinstance(json_data, dict):  # If the input is a single bill
+    elif isinstance(json_data, dict):  
         return fraud(json_data)
     else:
         raise ValueError("Input JSON must be a dictionary or a list of dictionaries.")

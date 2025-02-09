@@ -7,8 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const GOOGLE_API_KEY = "AIzaSyCEbn8bq8qCFT3nl0_7ft1ub_V-qehNLlQ"; // Use environment variable
-const MODEL_NAME = 'gemini-1.5-flash'; // Replace with the correct model name if different
+const GOOGLE_API_KEY = "AIzaSyCEbn8bq8qCFT3nl0_7ft1ub_V-qehNLlQ"; 
+const MODEL_NAME = 'gemini-1.5-flash';
 
 app.post('/api/chat', async (req, res) => {
     const { message } = req.body;

@@ -4,12 +4,10 @@ import datetime
 
 app = Flask(__name__)
 
-# Connect to MongoDB
 try:
     client = MongoClient('mongodb://127.0.0.1:27017/')
     db = client['receipt_database']
     receipts_collection = db['receipts']
-    # Create indexes for common query fields
     receipts_collection.create_index([('bill.date', 1)])
     receipts_collection.create_index([('vendor.name', 1)])
     receipts_collection.create_index([('bill.invoice_number', 1)], unique=True)
@@ -23,10 +21,8 @@ def store_receipt():
         if not receipt_data:
             return jsonify({'error': 'No receipt data provided'}), 400
 
-        # Add timestamp for when the receipt was stored
         receipt_data['stored_at'] = datetime.datetime.utcnow()
 
-        # Insert the receipt data into MongoDB
         result = receipts_collection.insert_one(receipt_data)
         
         return jsonify({
@@ -44,7 +40,7 @@ def get_receipt(receipt_id):
         receipt = receipts_collection.find_one({'_id': ObjectId(receipt_id)})
         
         if receipt:
-            receipt['_id'] = str(receipt['_id'])  # Convert ObjectId to string
+            receipt['_id'] = str(receipt['_id'])  
             return jsonify(receipt), 200
         else:
             return jsonify({'error': 'Receipt not found'}), 404
@@ -55,13 +51,11 @@ def get_receipt(receipt_id):
 @app.route('/search_receipts', methods=['GET'])
 def search_receipts():
     try:
-        # Get search parameters from query string
         vendor_name = request.args.get('vendor_name')
         start_date = request.args.get('start_date')
         end_date = request.args.get('end_date')
         invoice_number = request.args.get('invoice_number')
 
-        # Build query based on provided parameters
         query = {}
         if vendor_name:
             query['vendor.name'] = {'$regex': vendor_name, '$options': 'i'}
@@ -73,10 +67,7 @@ def search_receipts():
         if invoice_number:
             query['bill.invoice_number'] = invoice_number
 
-        # Execute search
         receipts = list(receipts_collection.find(query))
-        
-        # Convert ObjectId to string for JSON serialization
         for receipt in receipts:
             receipt['_id'] = str(receipt['_id'])
 
