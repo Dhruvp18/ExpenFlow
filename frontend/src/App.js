@@ -37,7 +37,6 @@ const AppRoutes = () => {
       />
       <Route path="/d" element={<Dashboard />} />
       <Route path="/chatbot" element={<Chatbot/>}/>
-      <Route path="/dashboard" element={<ProtectedRoute><Orgdashboard /></ProtectedRoute> }/>
       <Route path="/dashboard" element={<Orgdashboard />}/>
       <Route path="/userDashboard" element={<Dashboard />} />
       <Route path="/userUpload" element={<ReceiptUploader />} />

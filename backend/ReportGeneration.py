@@ -128,9 +128,11 @@ def generate_expense_report(json_data, api_key):
     """
     Generate professional expense reports (for employees and HR) using Gemini API,
     export them as .docx files, and send them via email using yagmail.
+    
     Args:
         json_data (dict or list): The JSON data for receipts.
         api_key (str): API key for the Gemini model.
+    
     Returns:
         None: Prints both reports directly and sends them via email.
     """
@@ -252,8 +254,10 @@ def generate_expense_report(json_data, api_key):
 
     total_reimbursement = filter_zero_values(total_reimbursement)
     total_non_reimbursable = filter_zero_values(total_non_reimbursable)
+
     for employee_id in employee_breakdown:
         employee_breakdown[employee_id] = filter_zero_values(employee_breakdown[employee_id])
+
     for employee_id in employee_non_reimbursable:
         employee_non_reimbursable[employee_id] = {
             k: v for k, v in employee_non_reimbursable[employee_id].items() if v["amount"] > 0
@@ -275,38 +279,35 @@ def generate_expense_report(json_data, api_key):
         non_reimbursable = report_data['employee_non_reimbursable'].get(employee_id, {})
         violations = report_data['violations_summary'].get(employee_id, [])
 
-        # Create a table for reimbursements
-        reimbursement_table = [["Category", "Amount"]]
-        for category, amount in reimbursable.items():
-            reimbursement_table.append([category, f"₹{amount}"])
+        # Generate bullet points for reimbursable amounts
+        reimbursable_bullet_points = "\n".join(
+            [f"- {category}: ₹{amount}" for category, amount in reimbursable.items()]
+        )
 
-        # Create a table for non-reimbursable amounts
-        non_reimbursable_table = [["Category", "Amount", "Violations"]]
-        for category, details in non_reimbursable.items():
-            non_reimbursable_table.append([category, f"₹{details['amount']}", ", ".join(details['violations'])])
+        # Generate bullet points for non-reimbursable amounts
+        non_reimbursable_bullet_points = "\n".join(
+            [f"- {category}: ₹{details['amount']} (Violations: {', '.join(details['violations'])})"
+             for category, details in non_reimbursable.items()]
+        )
 
-        # Create a table for violations with policy details
-        violations_table = [["Violation", "Policy"]]
-        for violation in violations:
-            policy = "Policy not found"
-            for level, policies in EXPENSE_POLICIES.items():
-                for category, limits in policies.items():
-                    for key, value in limits.items():
-                        if key.lower() in violation.lower():
-                            policy = f"{key}: {value}"
-                            break
-            violations_table.append([violation, policy])
+        # Generate bullet points for violations with policy details
+        violations_bullet_points = "\n".join(
+            [f"- Violation: {violation}, Policy: {find_policy(violation)}" for violation in violations]
+        )
 
         # Generate textual summary
         prompt = f"""
         Generate a concise and professional expense report for an employee with ID {employee_id}.
         Include the following details:
-        - Reimbursable Amounts by Category (in table format):
-          {tabulate(reimbursement_table, headers="firstrow", tablefmt="grid")}
-        - Non-Reimbursable Amounts by Category (in table format):
-          {tabulate(non_reimbursable_table, headers="firstrow", tablefmt="grid")}
-        - Violations Detected (in table format):
-          {tabulate(violations_table, headers="firstrow", tablefmt="grid")}
+        Reimbursable Amounts by Category:
+        {reimbursable_bullet_points}
+        
+        Non-Reimbursable Amounts by Category:
+        {non_reimbursable_bullet_points}
+        
+        Violations Detected:
+        {violations_bullet_points}
+        
         Provide personalized feedback and suggestions to help the employee avoid similar issues in the future.
         Use a friendly and motivational tone.
         """
@@ -316,81 +317,82 @@ def generate_expense_report(json_data, api_key):
     def generate_hr_report(report_data):
         model = genai.GenerativeModel('gemini-pro')
 
-        # Create a table for total reimbursements
-        total_reimbursement_table = [["Category", "Amount"]]
-        for category, amount in report_data['total_reimbursement'].items():
-            total_reimbursement_table.append([category, f"₹{amount}"])
+        # Generate bullet points for total reimbursements
+        total_reimbursement_bullet_points = "\n".join(
+            [f"- {category}: ₹{amount}" for category, amount in report_data['total_reimbursement'].items()]
+        )
 
-        # Create a table for total non-reimbursable amounts
-        total_non_reimbursable_table = [["Category", "Amount"]]
-        for category, amount in report_data['total_non_reimbursable'].items():
-            total_non_reimbursable_table.append([category, f"₹{amount}"])
+        # Generate bullet points for total non-reimbursable amounts
+        total_non_reimbursable_bullet_points = "\n".join(
+            [f"- {category}: ₹{amount}" for category, amount in report_data['total_non_reimbursable'].items()]
+        )
 
-        # Create a table for employee-wise reimbursements
-        employee_reimbursement_table = [["Employee ID", "Category", "Amount"]]
-        for employee_id, categories in report_data['employee_breakdown'].items():
-            for category, amount in categories.items():
-                employee_reimbursement_table.append([employee_id, category, f"₹{amount}"])
+        # Generate bullet points for employee-wise reimbursements
+        employee_reimbursement_bullet_points = "\n".join(
+            [f"- Employee ID: {employee_id}, Category: {category}, Amount: ₹{amount}"
+             for employee_id, categories in report_data['employee_breakdown'].items()
+             for category, amount in categories.items()]
+        )
 
-        # Create a table for employee-wise non-reimbursable amounts
-        employee_non_reimbursable_table = [["Employee ID", "Category", "Amount", "Violations"]]
-        for employee_id, categories in report_data['employee_non_reimbursable'].items():
-            for category, details in categories.items():
-                employee_non_reimbursable_table.append(
-                    [employee_id, category, f"₹{details['amount']}", ", ".join(details['violations'])]
-                )
+        # Generate bullet points for employee-wise non-reimbursable amounts
+        employee_non_reimbursable_bullet_points = "\n".join(
+            [f"- Employee ID: {employee_id}, Category: {category}, Amount: ₹{details['amount']}, "
+             f"Violations: {', '.join(details['violations'])}"
+             for employee_id, categories in report_data['employee_non_reimbursable'].items()
+             for category, details in categories.items()]
+        )
 
-        # Create a table for violations with policy details
-        violations_table = [["Employee ID", "Violation", "Policy"]]
-        for employee_id, violations in report_data['violations_summary'].items():
-            for violation in violations:
-                policy = "Policy not found"
-                for level, policies in EXPENSE_POLICIES.items():
-                    for category, limits in policies.items():
-                        for key, value in limits.items():
-                            if key.lower() in violation.lower():
-                                policy = f"{key}: {value}"
-                                break
-                violations_table.append([employee_id, violation, policy])
+        # Generate bullet points for violations with policy details
+        violations_bullet_points = "\n".join(
+            [f"- Employee ID: {employee_id}, Violation: {violation}, Policy: {find_policy(violation)}"
+             for employee_id, violations in report_data['violations_summary'].items()
+             for violation in violations]
+        )
 
         # Generate textual summary
         prompt = f"""
         Generate a detailed and professional expense report for HR.
         Include the following details:
-        - Total Reimbursement by Category (in table format):
-          {tabulate(total_reimbursement_table, headers="firstrow", tablefmt="grid")}
-        - Total Non-Reimbursable Amounts by Category (in table format):
-          {tabulate(total_non_reimbursable_table, headers="firstrow", tablefmt="grid")}
-        - Employee-wise Breakdown of Reimbursable Amounts (in table format):
-          {tabulate(employee_reimbursement_table, headers="firstrow", tablefmt="grid")}
-        - Employee-wise Breakdown of Non-Reimbursable Amounts (in table format):
-          {tabulate(employee_non_reimbursable_table, headers="firstrow", tablefmt="grid")}
-        - Employee-wise Violations (in table format):
-          {tabulate(violations_table, headers="firstrow", tablefmt="grid")}
+        Total Reimbursement by Category:
+        {total_reimbursement_bullet_points}
+        
+        Total Non-Reimbursable Amounts by Category:
+        {total_non_reimbursable_bullet_points}
+        
+        Employee-wise Breakdown of Reimbursable Amounts:
+        {employee_reimbursement_bullet_points}
+        
+        Employee-wise Breakdown of Non-Reimbursable Amounts:
+        {employee_non_reimbursable_bullet_points}
+        
+        Employee-wise Violations:
+        {violations_bullet_points}
+        
         Highlight compliance issues, flagged items, and provide actionable recommendations for improving expense management.
         Use a formal and detailed tone.
         """
         response = model.generate_content(prompt)
         return response.text
 
-    # Generate reports
-    employee_reports = {}
-    for employee_id in employee_breakdown.keys():
-        employee_reports[employee_id] = generate_employee_report(report_data, employee_id)
-
-    hr_report_text = generate_hr_report(report_data)
+    # Helper function to find policy details
+    def find_policy(violation):
+        for level, policies in EXPENSE_POLICIES.items():
+            for category, limits in policies.items():
+                for key, value in limits.items():
+                    if key.lower() in violation.lower():
+                        return f"{key}: {value}"
+        return "Policy not found"
 
     # Export reports to .docx format
     def export_to_docx(report_text, filename):
         doc = Document()
         doc.add_heading("Expense Report", level=1)
-        doc.add_paragraph(report_text)
+        for line in report_text.split("\n"):
+            if line.startswith("-"):
+                doc.add_paragraph(line, style='List Bullet')
+            else:
+                doc.add_paragraph(line)
         doc.save(filename)
-
-    for employee_id, report_text in employee_reports.items():
-        export_to_docx(report_text, f"employee_report_{employee_id}.docx")
-
-    export_to_docx(hr_report_text, "hr_report.docx")
 
     # Send emails with attachments using yagmail
     def send_email(sender_email, recipient_email, subject, body, attachment_path):
@@ -403,6 +405,19 @@ def generate_expense_report(json_data, api_key):
             contents=body,
             attachments=attachment_path
         )
+
+    # Generate reports
+    employee_reports = {}
+    for employee_id in employee_breakdown.keys():
+        employee_reports[employee_id] = generate_employee_report(report_data, employee_id)
+
+    hr_report_text = generate_hr_report(report_data)
+
+    # Export reports to .docx format
+    for employee_id, report_text in employee_reports.items():
+        export_to_docx(report_text, f"employee_report_{employee_id}.docx")
+
+    export_to_docx(hr_report_text, "hr_report.docx")
 
     # Send HR report
     send_email(

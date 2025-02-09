@@ -12,6 +12,8 @@ import {
 import { data } from "./dummydata";
 import Navbar from "./Navbar";
 import useInvoicesByCompany from "../hooks/useInvoicesByCompany";
+import LogoutButton from "./LogOutButton/LogoutButton";
+import { Link } from "react-router-dom";
 
 const TabButton = ({ active, children, onClick }) => (
   <motion.button
@@ -237,7 +239,21 @@ const Orgdashboard = () => {
 
   return (
     <div className="min-h-screen bg-purple-50">
-      <Navbar />
+      <nav className="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-purple-100 px-12">
+      <div className="container mx-auto px-6 py-4">
+        <div className="flex justify-between items-center">
+          <Link to='/' className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-900 bg-clip-text text-transparent">
+            ExpenFlow
+          </Link>
+          <div className="flex gap-8">
+            <Link to="/dashboard" className="text-purple-900 hover:text-purple-700 transition-colors">Dashboard</Link>  
+            <Link to="/chatbot" className="text-purple-900 hover:text-purple-700 transition-colors">ChatBot</Link>
+            <LogoutButton/>  
+            
+          </div>
+        </div>
+      </div>
+    </nav>
       <main className="container mx-auto px-4 pt-20 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-purple-900 mb-2">
