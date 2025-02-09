@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const invoiceRoutes = require('./routes/invoices'); 
 const userInvoicesRoutes = require('./routes/userInvoices'); 
+const companyInvoicesRoutes = require('./routes/companyInvoices'); 
 
 const app = express();
 
@@ -18,6 +19,7 @@ mongoose.connect('mongodb+srv://dhruv:dhruv123@cluster0.kwwgy.mongodb.net/', {
 
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/user-invoices', userInvoicesRoutes);
+app.use('/api/company', companyInvoicesRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

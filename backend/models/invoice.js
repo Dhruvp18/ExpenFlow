@@ -36,6 +36,10 @@ const invoiceSchema = new mongoose.Schema({
         enum: ['pending', 'accepted', 'rejected'],
         default: 'pending'
     },
+    flags: [{
+        type: String,
+        required: false
+    }],
     filename: String
 }, { timestamps: true });
 

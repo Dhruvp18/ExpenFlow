@@ -12,6 +12,7 @@ import Orgdashboard from "./components/org_dashboard";
 import Dashboard from "./components/UserDashboard";
 import ReceiptUploader from "./components/UserUpload";
 import FetchUserInvoices from "./components/test";
+import CompanyInvoiceList from "./components/test2";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -31,6 +32,7 @@ const AppRoutes = () => {
       <Route path="/userDashboard" element={<Dashboard />} />
       <Route path="/userUpload" element={<ReceiptUploader />} />
       <Route path="/test" element={<FetchUserInvoices />} />
+      <Route path="/test2" element={<CompanyInvoiceList />} />
     </Routes>
   );
 };
