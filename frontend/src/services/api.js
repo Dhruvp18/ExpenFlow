@@ -1,9 +1,9 @@
 import axios from 'axios';
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'http://localhost:5000/api/invoices';
 
 export const addInvoice = async (user, invoiceData) => {
     try {
-        const response = await fetch(`${BASE_URL}/invoices`, {
+        const response = await fetch(BASE_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -20,7 +20,7 @@ export const addInvoice = async (user, invoiceData) => {
 
 export const updateInvoice = async (invoiceNumber, user, updatedData) => {
     try {
-        const response = await fetch(`${BASE_URL}/invoices/${invoiceNumber}`, {
+        const response = await fetch(`${BASE_URL}/${invoiceNumber}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -37,7 +37,7 @@ export const updateInvoice = async (invoiceNumber, user, updatedData) => {
 
 export const fetchUserInvoices = async (email) => {
     try {
-        const response = await axios.get(`${BASE_URL}/user-invoices/${email}`);
+        const response = await axios.get(`http://localhost:5000/api/user-invoices/${email}`);
         return response.data;
     } catch (error) {
         throw new Error(error.response?.data?.error || 'Failed to fetch invoices');

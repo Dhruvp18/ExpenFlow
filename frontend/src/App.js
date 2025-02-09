@@ -8,11 +8,12 @@ import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import "./App.css";
 import "./fonts.css";
 import Landing from "./components/Landing";
-import { Orgdashboard } from "./components/org_dashboard";
+import Orgdashboard from "./components/org_dashboard";
 import Dashboard from "./components/UserDashboard";
 import Chatbot from "./components/Chatbot";
 import ReceiptUploader from "./components/UserUpload";
 import FetchUserInvoices from "./components/test";
+import CompanyInvoiceList from "./components/test2";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -37,10 +38,12 @@ const AppRoutes = () => {
       <Route path="/d" element={<Dashboard />} />
       <Route path="/chatbot" element={<Chatbot/>}/>
       <Route path="/dashboard" element={<ProtectedRoute><Orgdashboard /></ProtectedRoute> }/>
+      <Route path="/dashboard" element={<Orgdashboard />}/>
       <Route path="/userDashboard" element={<Dashboard />} />
       <Route path="/userUpload" element={<ReceiptUploader />} />
       <Route path ='/chat-bot' element={<Chatbot/>}/>
       <Route path="/test" element={<FetchUserInvoices />} />
+      <Route path="/test2" element={<CompanyInvoiceList />} />
     </Routes>
   );
 };

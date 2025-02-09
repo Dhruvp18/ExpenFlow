@@ -28,16 +28,16 @@ def allowed_file(filename):
 
 def extract_receipt_data(json_data):
     vendor_info = {
-        "name": json_data["vendor"].get("name") if json_data["vendor"].get("name") is not None else 0,
-        "category": json_data["vendor"].get("category") if json_data["vendor"].get("category") is not None else 0,
+        "name": json_data["vendor"].get("name") if json_data["vendor"].get("name") is not None else '',
+        "category": json_data["vendor"].get("category") if json_data["vendor"].get("category") is not None else '',
         "registration_number": json_data["vendor"].get("reg_number") if json_data["vendor"].get("reg_number") is not None else 0
     }
     
     bill_info = {
-        "date": json_data.get("date") if json_data.get("date") is not None else 0,
-        "invoice_number": json_data.get("invoice_number") if json_data.get("invoice_number") is not None else 0,
-        "currency": json_data.get("currency_code") if json_data.get("currency_code") is not None else 0,
-        "payment_mode": json_data["payment"].get("display_name") if json_data["payment"].get("display_name") is not None else 0,
+        "date": json_data.get("date") if json_data.get("date") is not None else '',
+        "invoice_number": json_data.get("invoice_number") if json_data.get("invoice_number") is not None else '',
+        "currency": json_data.get("currency_code") if json_data.get("currency_code") is not None else '',
+        "payment_mode": json_data["payment"].get("display_name") if json_data["payment"].get("display_name") is not None else '',
         "totalAmount": json_data.get("total") if json_data.get("total") is not None else 0,
         "totalTax": json_data.get("tax") if json_data.get("tax") is not None else 0
     }
@@ -48,7 +48,7 @@ def extract_receipt_data(json_data):
             continue
             
         item_info = {
-            "name": item.get("description") if item.get("description") is not None else 0,
+            "name": item.get("description") if item.get("description") is not None else '',
             "quantity": item.get("quantity") if item.get("quantity") is not None else 0,
             "rate": item.get("price") if item.get("price") is not None else 0,
             "tax": item.get("tax") if item.get("tax") is not None else 0,
@@ -120,10 +120,12 @@ def upload_file():
             receipt_data = extract_receipt_data(json_data)
             if not receipt_data:
                 return jsonify({'error': 'Failed to extract receipt data'}), 500
+            fraud_detected = detect_fraud(receipt_data)
+            generate_expense_report(fraud_detected,"AIzaSyCEbn8bq8qCFT3nl0_7ft1ub_V-qehNLlQ")
             
             results.append({
                 'filename': filename,
-                'data': receipt_data
+                'data': fraud_detected
             })
         
         except Exception as e:

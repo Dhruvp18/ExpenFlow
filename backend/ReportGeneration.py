@@ -7,78 +7,84 @@ import yagmail
 EXPENSE_POLICIES = {
     "Executive Level": {
         "Travel Expenses": {
-            "Business Trips": {"min": 0, "max": 1600000},
-            "Local Transportation": {"min": 0, "max": 60000},
-            "Mileage Reimbursement": {"min":0, "max":45000},
+            "Business Trips": "₹4,00,000 - ₹16,00,000 per month",
+            "Local Transportation": "₹30,000 - ₹60,000 per month",
+            "Mileage Reimbursement": "₹45,000 per month",
             "Parking Fees & Tolls": "Fully covered"
         },
         "Accommodation": {
-            "Hotel Stays": {"min": 0, "max": 125000},
-            "Rental Allowance": {"min": 0, "max": 600000},
-            "Meals During Travel": {"min": 0, "max": 40000}
+            "Hotel Stays": "₹25,000 - ₹1,25,000 per night",
+            "Rental Allowance": "₹2,50,000 - ₹6,00,000 per month",
+            "Meals During Travel": "₹8,000 - ₹40,000 per day"
         },
         "Office Supplies and Equipment": {
-            "Work Tools": "Unlimited",
-            "Home Office Setup": {"min":0, "max":800000}
+            "Work Tools": "Unlimited (as per requirement)",
+            "Home Office Setup": "Up to ₹8,00,000"
         },
         "Communication Expenses": {
             "Mobile/Internet Bills": "Fully covered"
         },
         "Meals and Entertainment": {
-            "Client Meetings": {"min": 0, "max": 4000000},
-            "Team Outings": {"min": 0, "max": 1600000},
-            "Daily Meal Allowance": {"min": 0, "max": 24000}
+            "Client Meetings": "Up to ₹4,00,000 per month",
+            "Team Outings": "Up to ₹1,60,000 per month",
+            "Daily Meal Allowance": "₹8,000 - ₹24,000 per day"
         }
     },
     "Senior Management": {
         "Travel Expenses": {
-            "Business Trips": {"min": 0, "max": 400000},
-            "Local Transportation": {"min": 0, "max": 25000},
-            "Mileage Reimbursement": {"min":0, "max":30000},
-            "Parking Fees & Tolls": {"min": 0, "max": 10000}
+            "Business Trips": "₹1,50,000 - ₹4,00,000 per month",
+            "Local Transportation": "₹20,000 - ₹25,000 per month",
+            "Mileage Reimbursement": "₹30,000 per month",
+            "Parking Fees & Tolls": "Up to ₹10,000 per month"
         },
         "Accommodation": {
-            "Hotel Stays": {"min": 0, "max": 80000},
-            "Rental Allowance": {"min": 0, "max": 150000},
-            "Meals During Travel": {"min": 0, "max": 24000}
+            "Hotel Stays": "₹16,000 - ₹80,000 per night",
+            "Rental Allowance": "₹1,00,000 - ₹1,50,000 per month",
+            "Meals During Travel": "₹6,000 - ₹24,000 per day"
         },
         "Office Supplies and Equipment": {
-            "Work Tools": {"min":0, "max":400000},
-            "Home Office Setup": {"min":0, "max":400000}
+            "Work Tools": "Up to ₹4,00,000 per year",
+            "Home Office Setup": "Up to ₹4,00,000"
+        },
+        "Communication Expenses": {
+            "Mobile/Internet Bills": "Fully covered"
         },
         "Meals and Entertainment": {
-            "Client Meetings": {"min": 0, "max": 2400000},
-            "Team Outings": {"min": 0, "max": 1200000}
+            "Client Meetings": "Up to ₹2,40,000 per month",
+            "Team Outings": "Up to ₹1,20,000 per month"
         }
     },
     "Middle Management": {
         "Travel Expenses": {
-            "Business Trips": {"min": 0, "max": 560000},
-            "Local Transportation": {"min": 0, "max": 20000},
-            "Mileage Reimbursement": {"min":0, "max":25000}
+            "Business Trips": "₹1,60,000 - ₹5,60,000 per month",
+            "Local Transportation": "₹16,000 - ₹20,000 per month",
+            "Mileage Reimbursement": "₹25,000 per month"
         },
         "Accommodation": {
-            "Rental Allowance": {"min": 0, "max": 90000}
+            "Rental Allowance": "₹80,000 - ₹90,000 per month"
         },
         "Office Supplies and Equipment": {
-            "Work Tools": {"min":0, "max":24000},
-            "Home Office Setup": {"min":0, "max":24000}
+            "Work Tools": "Up to ₹2,40,000 per year",
+            "Home Office Setup": "Up to ₹2,40,000"
+        },
+        "Communication Expenses": {
+            "Mobile/Internet Bills": "Fully covered"
         },
         "Meals and Entertainment": {
-            "Client Meetings": {"min": 0, "max": 1600000}
+            "Client Meetings": "Up to ₹1,60,000 per event"
         }
     },
     "Lower Management": {
         "Travel Expenses": {
-            "Business Trips": {"min": 0, "max": 400000},
-            "Local Transportation": {"min": 0, "max": 15000},
-            "Mileage Reimbursement": {"min":0, "max":20000}
+            "Business Trips": "₹80,000 - ₹4,00,000 per trip",
+            "Local Transportation": "₹12,000 - ₹15,000 per month",
+            "Mileage Reimbursement": "₹20,000 per month"
         },
         "Accommodation": {
-            "Rental Allowance": {"min": 0, "max": 50000}
+            "Rental Allowance": "₹40,000 - ₹50,000 per month"
         },
         "Office Supplies and Equipment": {
-            "Work Tools": {"min":0, "max":160000}
+            "Work Tools": "Up to ₹1,60,000 per year"
         },
         "Communication Expenses": {
             "Mobile/Internet Bills": "Fully covered"
@@ -86,15 +92,15 @@ EXPENSE_POLICIES = {
     },
     "Team Leads & Supervisors": {
         "Travel Expenses": {
-            "Business Trips": {"min": 0, "max": 240000},
-            "Local Transportation": {"min": 0, "max": 10000},
-            "Mileage Reimbursement": {"min":0, "max":20000}
+            "Business Trips": "₹40,000 - ₹2,40,000 per trip",
+            "Local Transportation": "₹8,000 - ₹10,000 per month",
+            "Mileage Reimbursement": "₹15,000 per month"
         },
         "Accommodation": {
-            "Rental Allowance": {"min": 0, "max": 40000}
+            "Rental Allowance": "₹30,000 - ₹40,000 per month"
         },
         "Meals and Entertainment": {
-            "Client Meetings": {"min": 0, "max": 800000}
+            "Client Meetings": "Up to ₹80,000 per event"
         },
         "Communication Expenses": {
             "Mobile/Internet Bills": "Fully covered"
@@ -102,15 +108,15 @@ EXPENSE_POLICIES = {
     },
     "Staff & Employees": {
         "Travel Expenses": {
-            "Business Trips": {"min": 0, "max": 160000},
-            "Local Transportation": {"min": 0, "max": 5000},
-            "Mileage Reimbursement": {"min":0, "max":10000}
+            "Business Trips": "₹24,000 - ₹1,60,000 per trip",
+            "Local Transportation": "Up to ₹5,000 per month",
+            "Mileage Reimbursement": "₹10,000 per month"
         },
         "Accommodation": {
-            "Rental Allowance": {"min": 0, "max": 30000}
+            "Rental Allowance": "₹15,000 - ₹30,000 per month"
         },
         "Office Supplies and Equipment": {
-            "Work Tools": {"min":0, "max":80000}
+            "Work Tools": "Up to ₹80,000 per year"
         },
         "Communication Expenses": {
             "Mobile/Internet Bills": "Fully covered"
@@ -121,7 +127,7 @@ EXPENSE_POLICIES = {
 def generate_expense_report(json_data, api_key):
     """
     Generate professional expense reports (for employees and HR) using Gemini API,
-    export them as .html files, and send them via email using yagmail.
+    export them as .docx files, and send them via email using yagmail.
     Args:
         json_data (dict or list): The JSON data for receipts.
         api_key (str): API key for the Gemini model.
@@ -171,19 +177,21 @@ def generate_expense_report(json_data, api_key):
     elif not isinstance(json_data, list):
         raise ValueError("json_data must be a dictionary or a list of dictionaries.")
 
-    # Process data (unchanged from the original code)
+    # Process data
     for receipt in json_data:
         if not isinstance(receipt, dict):
             print(f"Skipping invalid receipt (not a dictionary): {receipt}")
             continue
 
+        # Extract relevant fields with error handling
         vendor_name = receipt.get("vendor", {}).get("name", "N/A") if isinstance(receipt.get("vendor"), dict) else "N/A"
         invoice_number = receipt.get("invoice_number", "N/A")
-        total_amount = receipt.get("total", 0) or 0
+        total_amount = receipt.get("total", 0) or 0  # Ensure it's not None
         line_items = receipt.get("line_items", [])
         fraud_flags = receipt.get("meta", {}).get("fraud_flags", []) if isinstance(receipt.get("meta"), dict) else []
         employee_id = receipt.get("reference_number", "Unknown")
 
+        # Initialize employee breakdowns if not already present
         if employee_id not in employee_breakdown:
             employee_breakdown[employee_id] = {cat: 0 for cat in expense_categories}
         if employee_id not in employee_non_reimbursable:
@@ -193,15 +201,17 @@ def generate_expense_report(json_data, api_key):
         if employee_id not in violations_summary:
             violations_summary[employee_id] = []
 
+        # Process line items
         for item in line_items:
             if not isinstance(item, dict):
                 print(f"Skipping invalid line item (not a dictionary): {item}")
                 continue
 
             item_name = item.get("description", "Unknown Item")
-            item_total = item.get("total", 0) or 0
+            item_total = item.get("total", 0) or 0  # Ensure it's not None
             category = categorize_item(item_name)
 
+            # Use Gemini API to detect fraud flags
             def detect_fraud(item_description, total_amount, vendor_name):
                 model = genai.GenerativeModel('gemini-pro')
                 prompt = f"""
@@ -265,18 +275,18 @@ def generate_expense_report(json_data, api_key):
         non_reimbursable = report_data['employee_non_reimbursable'].get(employee_id, {})
         violations = report_data['violations_summary'].get(employee_id, [])
 
-        # Create HTML tables
-        reimbursement_table = "<table border='1'><tr><th>Category</th><th>Amount</th></tr>"
+        # Create a table for reimbursements
+        reimbursement_table = [["Category", "Amount"]]
         for category, amount in reimbursable.items():
-            reimbursement_table += f"<tr><td>{category}</td><td>₹{amount}</td></tr>"
-        reimbursement_table += "</table>"
+            reimbursement_table.append([category, f"₹{amount}"])
 
-        non_reimbursable_table = "<table border='1'><tr><th>Category</th><th>Amount</th><th>Violations</th></tr>"
+        # Create a table for non-reimbursable amounts
+        non_reimbursable_table = [["Category", "Amount", "Violations"]]
         for category, details in non_reimbursable.items():
-            non_reimbursable_table += f"<tr><td>{category}</td><td>₹{details['amount']}</td><td>{', '.join(details['violations'])}</td></tr>"
-        non_reimbursable_table += "</table>"
+            non_reimbursable_table.append([category, f"₹{details['amount']}", ", ".join(details['violations'])])
 
-        violations_table = "<table border='1'><tr><th>Violation</th><th>Policy</th></tr>"
+        # Create a table for violations with policy details
+        violations_table = [["Violation", "Policy"]]
         for violation in violations:
             policy = "Policy not found"
             for level, policies in EXPENSE_POLICIES.items():
@@ -285,19 +295,18 @@ def generate_expense_report(json_data, api_key):
                         if key.lower() in violation.lower():
                             policy = f"{key}: {value}"
                             break
-            violations_table += f"<tr><td>{violation}</td><td>{policy}</td></tr>"
-        violations_table += "</table>"
+            violations_table.append([violation, policy])
 
         # Generate textual summary
         prompt = f"""
         Generate a concise and professional expense report for an employee with ID {employee_id}.
-        1. Reimbursable Amounts by Category:
-        {reimbursement_table}
-        2. Non-Reimbursable Amounts by Category:
-        {non_reimbursable_table}
-        3. Violations Detected:
-        {violations_table}
-        4. Personalized Feedback and Suggestions:
+        Include the following details:
+        - Reimbursable Amounts by Category (in table format):
+          {tabulate(reimbursement_table, headers="firstrow", tablefmt="grid")}
+        - Non-Reimbursable Amounts by Category (in table format):
+          {tabulate(non_reimbursable_table, headers="firstrow", tablefmt="grid")}
+        - Violations Detected (in table format):
+          {tabulate(violations_table, headers="firstrow", tablefmt="grid")}
         Provide personalized feedback and suggestions to help the employee avoid similar issues in the future.
         Use a friendly and motivational tone.
         """
@@ -307,30 +316,32 @@ def generate_expense_report(json_data, api_key):
     def generate_hr_report(report_data):
         model = genai.GenerativeModel('gemini-pro')
 
-        # Create HTML tables
-        total_reimbursement_table = "<table border='1'><tr><th>Category</th><th>Amount</th></tr>"
+        # Create a table for total reimbursements
+        total_reimbursement_table = [["Category", "Amount"]]
         for category, amount in report_data['total_reimbursement'].items():
-            total_reimbursement_table += f"<tr><td>{category}</td><td>₹{amount}</td></tr>"
-        total_reimbursement_table += "</table>"
+            total_reimbursement_table.append([category, f"₹{amount}"])
 
-        total_non_reimbursable_table = "<table border='1'><tr><th>Category</th><th>Amount</th></tr>"
+        # Create a table for total non-reimbursable amounts
+        total_non_reimbursable_table = [["Category", "Amount"]]
         for category, amount in report_data['total_non_reimbursable'].items():
-            total_non_reimbursable_table += f"<tr><td>{category}</td><td>₹{amount}</td></tr>"
-        total_non_reimbursable_table += "</table>"
+            total_non_reimbursable_table.append([category, f"₹{amount}"])
 
-        employee_reimbursement_table = "<table border='1'><tr><th>Employee ID</th><th>Category</th><th>Amount</th></tr>"
+        # Create a table for employee-wise reimbursements
+        employee_reimbursement_table = [["Employee ID", "Category", "Amount"]]
         for employee_id, categories in report_data['employee_breakdown'].items():
             for category, amount in categories.items():
-                employee_reimbursement_table += f"<tr><td>{employee_id}</td><td>{category}</td><td>₹{amount}</td></tr>"
-        employee_reimbursement_table += "</table>"
+                employee_reimbursement_table.append([employee_id, category, f"₹{amount}"])
 
-        employee_non_reimbursable_table = "<table border='1'><tr><th>Employee ID</th><th>Category</th><th>Amount</th><th>Violations</th></tr>"
+        # Create a table for employee-wise non-reimbursable amounts
+        employee_non_reimbursable_table = [["Employee ID", "Category", "Amount", "Violations"]]
         for employee_id, categories in report_data['employee_non_reimbursable'].items():
             for category, details in categories.items():
-                employee_non_reimbursable_table += f"<tr><td>{employee_id}</td><td>{category}</td><td>₹{details['amount']}</td><td>{', '.join(details['violations'])}</td></tr>"
-        employee_non_reimbursable_table += "</table>"
+                employee_non_reimbursable_table.append(
+                    [employee_id, category, f"₹{details['amount']}", ", ".join(details['violations'])]
+                )
 
-        violations_table = "<table border='1'><tr><th>Employee ID</th><th>Violation</th><th>Policy</th></tr>"
+        # Create a table for violations with policy details
+        violations_table = [["Employee ID", "Violation", "Policy"]]
         for employee_id, violations in report_data['violations_summary'].items():
             for violation in violations:
                 policy = "Policy not found"
@@ -340,23 +351,22 @@ def generate_expense_report(json_data, api_key):
                             if key.lower() in violation.lower():
                                 policy = f"{key}: {value}"
                                 break
-                violations_table += f"<tr><td>{employee_id}</td><td>{violation}</td><td>{policy}</td></tr>"
-        violations_table += "</table>"
+                violations_table.append([employee_id, violation, policy])
 
         # Generate textual summary
         prompt = f"""
         Generate a detailed and professional expense report for HR.
-        1. Total Reimbursement by Category:
-        {total_reimbursement_table}
-        2. Total Non-Reimbursable Amounts by Category:
-        {total_non_reimbursable_table}
-        3. Employee-wise Breakdown of Reimbursable Amounts:
-        {employee_reimbursement_table}
-        4. Employee-wise Breakdown of Non-Reimbursable Amounts:
-        {employee_non_reimbursable_table}
-        5. Employee-wise Violations:
-        {violations_table}
-        6. Compliance Issues and Recommendations:
+        Include the following details:
+        - Total Reimbursement by Category (in table format):
+          {tabulate(total_reimbursement_table, headers="firstrow", tablefmt="grid")}
+        - Total Non-Reimbursable Amounts by Category (in table format):
+          {tabulate(total_non_reimbursable_table, headers="firstrow", tablefmt="grid")}
+        - Employee-wise Breakdown of Reimbursable Amounts (in table format):
+          {tabulate(employee_reimbursement_table, headers="firstrow", tablefmt="grid")}
+        - Employee-wise Breakdown of Non-Reimbursable Amounts (in table format):
+          {tabulate(employee_non_reimbursable_table, headers="firstrow", tablefmt="grid")}
+        - Employee-wise Violations (in table format):
+          {tabulate(violations_table, headers="firstrow", tablefmt="grid")}
         Highlight compliance issues, flagged items, and provide actionable recommendations for improving expense management.
         Use a formal and detailed tone.
         """
@@ -370,27 +380,17 @@ def generate_expense_report(json_data, api_key):
 
     hr_report_text = generate_hr_report(report_data)
 
-    # Export reports to HTML format
-    def export_to_html(report_text, filename):
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Expense Report</title>
-        </head>
-        <body>
-            <h1>Expense Report</h1>
-            {report_text}
-        </body>
-        </html>
-        """
-        with open(filename, "w", encoding="utf-8") as file:
-            file.write(html_content)
+    # Export reports to .docx format
+    def export_to_docx(report_text, filename):
+        doc = Document()
+        doc.add_heading("Expense Report", level=1)
+        doc.add_paragraph(report_text)
+        doc.save(filename)
 
     for employee_id, report_text in employee_reports.items():
-        export_to_html(report_text, f"employee_report_{employee_id}.html")
+        export_to_docx(report_text, f"employee_report_{employee_id}.docx")
 
-    export_to_html(hr_report_text, "hr_report.html")
+    export_to_docx(hr_report_text, "hr_report.docx")
 
     # Send emails with attachments using yagmail
     def send_email(sender_email, recipient_email, subject, body, attachment_path):
@@ -410,7 +410,7 @@ def generate_expense_report(json_data, api_key):
         recipient_email="vrvora_b23@ce.vjti.ac.in",
         subject="MONTHLY COMPANY EXPENSE REPORT FOR HR",
         body="Please find attached the monthly expense report for HR.",
-        attachment_path="hr_report.html"
+        attachment_path="hr_report.docx"
     )
 
     # Send Employee reports
@@ -420,7 +420,7 @@ def generate_expense_report(json_data, api_key):
             recipient_email="vrvora_b23@ce.vjti.ac.in",  # Replace with actual employee email logic
             subject="MONTHLY COMPANY EXPENSE REPORT FOR EMPLOYEE",
             body="Please find attached the monthly expense report for your review.",
-            attachment_path=f"employee_report_{employee_id}.html"
+            attachment_path=f"employee_report_{employee_id}.docx"
         )
 
     print("\n--- Reports Generated and Sent Successfully ---\n")

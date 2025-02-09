@@ -1,12 +1,14 @@
 const express = require('express');
-const Invoice = require('../models/invoice');
+const Invoice = require('../models/invoice'); // Import the Invoice model
 
 const router = express.Router();
 
+// POST endpoint to add a new invoice
 router.post('/', async (req, res) => {
     try {
         const { user, data } = req.body;
 
+        // Add user details to the data
         const invoiceData = {
             user: {
                 name: user.name,
@@ -15,6 +17,7 @@ router.post('/', async (req, res) => {
             ...data
         };
 
+        // Save the invoice to MongoDB
         const invoice = new Invoice(invoiceData);
         await invoice.save();
 
@@ -25,15 +28,17 @@ router.post('/', async (req, res) => {
     }
 });
 
+// PATCH endpoint to update an existing invoice by invoice number
 router.patch('/:invoiceNumber', async (req, res) => {
     try {
         const { invoiceNumber } = req.params;
         const { user, data } = req.body;
 
+        // Find the invoice by invoice number and user email
         const updatedInvoice = await Invoice.findOneAndUpdate(
             { 'bill.invoice_number': invoiceNumber, 'user.email': user.email },
             { $set: data },
-            { new: true }
+            { new: true } // Return the updated document
         );
 
         if (!updatedInvoice) {

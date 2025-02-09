@@ -9,8 +9,8 @@ const invoiceSchema = new mongoose.Schema({
     bill: {
         currency: String,
         date: Date,
-        invoice_number: { type: String, unique: true }, 
-        payment_mode: Number,
+        invoice_number: String, 
+        payment_mode: String,
         totalAmount: Number,
         totalTax: Number
     },
@@ -37,6 +37,10 @@ const invoiceSchema = new mongoose.Schema({
         enum: ['pending', 'accepted', 'rejected'],
         default: 'pending'
     },
+    flags: [{
+        type: String,
+        required: false
+    }],
     filename: String
 }, { timestamps: true });
 

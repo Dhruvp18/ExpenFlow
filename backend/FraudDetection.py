@@ -114,112 +114,103 @@ EXPENSE_POLICIES = {
     }
 }
 
+PROCESSED_INVOICES = set()
 
 def fraud(receipt_data):
-    """
-    Detect potential fraud for a single receipt by comparing it against company policies.
-    Returns the receipt data with an added 'flags' field.
-    """
-    # Initialize flags list
     flags = []
-
-    # Validate that 'bill' exists and has the required fields
-    if "bill" not in receipt_data:
-        flags.append("Violation: Missing 'bill' key in receipt data.")
+    
+    if "bill" not in receipt_data or not isinstance(receipt_data["bill"], dict):
+        flags.append("Violation: Missing or malformed 'bill' key in receipt data.")
         receipt_data["flags"] = flags
+        receipt_data["status"] = "pending"
         return receipt_data
-
+    
     bill = receipt_data["bill"]
+    
     if "totalAmount" not in bill:
         flags.append("Violation: Missing 'totalAmount' in bill data.")
         receipt_data["flags"] = flags
+        receipt_data["status"] = "pending"
         return receipt_data
-
-    # Extract relevant fields from receipt data
+    
+    total_amount = 0
+    if isinstance(bill["totalAmount"], (int, float)):
+        total_amount = int(bill["totalAmount"])
+    else:
+        flags.append("Violation: Unexpected type for 'totalAmount'.")
+    
     employee_level = receipt_data.get("employeeLevel", "Staff & Employees")
-    total_amount = int(bill['totalAmount'].get("$numberInt", 0))  # Safely extract totalAmount
-    vendor_category = receipt_data.get('vendor', {}).get('category', "")
-    items = receipt_data.get('items', [])
-    description_keywords = [item['name'].lower() for item in items]
-
-    # Check if the employee level exists in the policies
+    vendor_category = receipt_data.get("vendor", {}).get("category", "")
+    items = receipt_data.get("items", [])
+    description_keywords = [item.get("name", "").lower() for item in items if isinstance(item, dict)]
+    
     if employee_level not in EXPENSE_POLICIES:
         flags.append(f"Violation: Employee level '{employee_level}' not found in expense policies.")
         receipt_data["flags"] = flags
+        receipt_data["status"] = "pending"
         return receipt_data
-
+    
     policy = EXPENSE_POLICIES[employee_level]
-
-    # Check the bill date (convert from milliseconds to datetime)
+    
     try:
-        bill_date_ms = bill['date']['$date']['$numberLong']
-        bill_date = datetime.fromtimestamp(int(bill_date_ms) / 1000)
-        current_date = datetime.now()
-        if current_date - bill_date > timedelta(days=30):
-            flags.append(f"Violation: Bill date {bill_date.strftime('%Y-%m-%d')} is older than one month.")
-    except KeyError:
+        if "date" in bill and isinstance(bill["date"], str):
+            bill_date = datetime.strptime(bill["date"], "%Y-%m-%d") 
+            current_date = datetime.now()
+            if current_date - bill_date > timedelta(days=30):
+                flags.append(f"Violation: Bill date {bill_date.strftime('%Y-%m-%d')} is older than one month.")
+    except Exception as e:
         flags.append("Violation: Missing or malformed 'date' in bill data.")
 
-    # Check total amount against travel expenses policy
+    invoice_number = bill.get("invoice_number", "")
+    if invoice_number:
+        if invoice_number in PROCESSED_INVOICES:
+            flags.append(f"Violation: Duplicate invoice number detected: {invoice_number}.")
+        else:
+            PROCESSED_INVOICES.add(invoice_number)
+    else:
+        flags.append("Violation: Missing 'invoice_number' in bill data.")
+    
     travel_expense_limits = policy.get("Travel Expenses", {})
     business_trip_limit = travel_expense_limits.get("Business Trips", {"min": 0, "max": 0})
     min_business_trip, max_business_trip = business_trip_limit["min"], business_trip_limit["max"]
-
     if total_amount < min_business_trip or total_amount > max_business_trip:
         flags.append(
             f"Violation: Total amount {total_amount} exceeds Business Trips policy limits ({min_business_trip} - {max_business_trip})."
         )
-
-    # Check local transportation expenses
+    
     local_transport_limit = travel_expense_limits.get("Local Transportation", {"min": 0, "max": 0})
     min_local, max_local = local_transport_limit["min"], local_transport_limit["max"]
-
     if "transport" in " ".join(description_keywords):
         if total_amount < min_local or total_amount > max_local:
             flags.append(
                 f"Violation: Local transportation expense {total_amount} exceeds policy limits ({min_local} - {max_local})."
             )
-
-    # Check mileage reimbursement
+    
     mileage_reimbursement = travel_expense_limits.get("Mileage Reimbursement", {"min": 0, "max": 0})
     mileage_max = mileage_reimbursement["max"]
-
     if "mileage" in " ".join(description_keywords):
         if total_amount > mileage_max:
             flags.append(
                 f"Violation: Mileage reimbursement {total_amount} exceeds policy limit of {mileage_max}."
             )
-
-    # Check parking fees and tolls
+    
     parking_tolls = travel_expense_limits.get("Parking Fees & Tolls", "Not covered")
-
     if parking_tolls != "Fully covered":
         if vendor_category.lower() == "parking" or "tolls" in " ".join(description_keywords):
             flags.append(f"Violation: Parking fees or tolls are not fully covered under policy.")
-
-    # Update status based on flags
+    
     if not flags:
         receipt_data["status"] = "Accepted"
     else:
-        receipt_data["status"] = "Rejected"
-
-    # Add flags to the receipt_data
+        receipt_data["status"] = "pending"
+    
     receipt_data["flags"] = flags
     return receipt_data
-
-
-def update_on_database(receipt):
-    """
-    Placeholder function to update the processed receipt data back to the database.
-    Replace this with actual database update logic.
-    """
-    pass
-
 
 def detect_fraud(json_data):
     """
     Process a large JSON file containing multiple bills.
-    Adds bill-specific and product-specific violations to each bill in the JSON.
+    Adds 'flags' and 'status' fields to each bill in the JSON.
     """
     if isinstance(json_data, list):  # If the input is a list of bills
         processed_data = []
