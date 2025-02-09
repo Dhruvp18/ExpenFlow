@@ -164,6 +164,7 @@ def fraud(receipt_data):
     travel_expense_limits = policy.get("Travel Expenses", {})
     business_trip_limit = travel_expense_limits.get("Business Trips", {"min": 0, "max": 0})
     min_business_trip, max_business_trip = business_trip_limit["min"], business_trip_limit["max"]
+
     if total_amount < min_business_trip or total_amount > max_business_trip:
         flags.append(
             f"Violation: Total amount {total_amount} exceeds Business Trips policy limits ({min_business_trip} - {max_business_trip})."
@@ -172,6 +173,7 @@ def fraud(receipt_data):
     # Check local transportation expenses
     local_transport_limit = travel_expense_limits.get("Local Transportation", {"min": 0, "max": 0})
     min_local, max_local = local_transport_limit["min"], local_transport_limit["max"]
+
     if "transport" in " ".join(description_keywords):
         if total_amount < min_local or total_amount > max_local:
             flags.append(
@@ -181,6 +183,7 @@ def fraud(receipt_data):
     # Check mileage reimbursement
     mileage_reimbursement = travel_expense_limits.get("Mileage Reimbursement", {"min": 0, "max": 0})
     mileage_max = mileage_reimbursement["max"]
+
     if "mileage" in " ".join(description_keywords):
         if total_amount > mileage_max:
             flags.append(
@@ -189,11 +192,10 @@ def fraud(receipt_data):
 
     # Check parking fees and tolls
     parking_tolls = travel_expense_limits.get("Parking Fees & Tolls", "Not covered")
+
     if parking_tolls != "Fully covered":
         if vendor_category.lower() == "parking" or "tolls" in " ".join(description_keywords):
             flags.append(f"Violation: Parking fees or tolls are not fully covered under policy.")
-
-    # Add more checks for other categories...
 
     # Update status based on flags
     if not flags:
@@ -205,8 +207,14 @@ def fraud(receipt_data):
     receipt_data["flags"] = flags
     return receipt_data
 
-def updateOnDatabase(reciept):
-    
+
+def update_on_database(receipt):
+    """
+    Placeholder function to update the processed receipt data back to the database.
+    Replace this with actual database update logic.
+    """
+    pass
+
 
 def detect_fraud(json_data):
     """
@@ -223,4 +231,3 @@ def detect_fraud(json_data):
         return fraud(json_data)
     else:
         raise ValueError("Input JSON must be a dictionary or a list of dictionaries.")
-
