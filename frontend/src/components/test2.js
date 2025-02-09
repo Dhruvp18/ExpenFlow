@@ -3,7 +3,7 @@ import useInvoicesByCompany from '../hooks/useInvoicesByCompany';
 
 const CompanyInvoiceList = ({ companyName }) => {
     // Call the custom hook with the company name
-    const { invoices, loading, error } = useInvoicesByCompany("company2");
+    const { invoices, loading, error } = useInvoicesByCompany(companyName);
     console.log(invoices);
     
     // Render loading state

@@ -11,7 +11,7 @@ const useInvoicesByCompany = (companyName) => {
                 setLoading(true);
                 setError(null);
 
-                const response = await fetch(`http://localhost:5000/api/invoices/company/${companyName}`);
+                const response = await fetch(`http://localhost:5000/api/company/${companyName}`);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch invoices');

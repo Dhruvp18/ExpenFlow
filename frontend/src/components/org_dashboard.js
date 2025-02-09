@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileText,
@@ -9,9 +9,9 @@ import {
   Search,
   Download,
 } from "lucide-react";
+import { data } from "./dummydata";
 import Navbar from "./Navbar";
-import useFetchUserInvoices from "../hooks/useFetchUserInvoices";
-import { updateInvoice } from "../services/api";
+import useInvoicesByCompany from "../hooks/useInvoicesByCompany";
 
 const TabButton = ({ active, children, onClick }) => (
   <motion.button
@@ -67,18 +67,24 @@ const ReceiptCard = ({ receipt, onView }) => (
       <div className="space-y-3">
         <div className="flex items-center space-x-2">
           <span className="text-lg font-semibold text-purple-900">
-            {receipt.name}
+            {receipt?.name || "Unnamed Receipt"}
           </span>
-          <StatusTag status={receipt.status} />
+          <StatusTag status={receipt?.status || "pending"} />
         </div>
         <div className="space-y-1">
           <p className="text-sm text-gray-600">
-            Date: {new Date(receipt.bill.date).toLocaleDateString()}
+            Date:{" "}
+            {receipt?.bill?.date
+              ? new Date(receipt.bill.date).toLocaleDateString()
+              : "N/A"}
           </p>
           <p className="text-sm text-gray-600">
-            Amount: {receipt.bill.currency} {receipt.bill.totalAmount}
+            Amount: {receipt?.bill?.currency || ""}{" "}
+            {receipt?.bill?.totalAmount || "N/A"}
           </p>
-          <p className="text-sm text-gray-600">Vendor: {receipt.vendor.name}</p>
+          <p className="text-sm text-gray-600">
+            Vendor: {receipt?.vendor?.name || "N/A"}
+          </p>
         </div>
       </div>
       <motion.button
@@ -123,18 +129,21 @@ const Orgdashboard = () => {
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [localInvoices, setLocalInvoices] = useState([]);
 
-  const { invoices, loading, error, fetchInvoices } = useFetchUserInvoices();
+  const companyName = "company1";
+  const {
+    invoices = [],
+    loading,
+    error,
+    mutate,
+  } = useInvoicesByCompany(companyName);
 
-  const pendingReceipts = invoices.filter(
-    (receipt) => receipt.status === "pending"
-  );
-  const acceptedReceipts = invoices.filter(
-    (receipt) => receipt.status === "accepted"
-  );
-  const rejectedReceipts = invoices.filter(
-    (receipt) => receipt.status === "rejected"
-  );
+  React.useEffect(() => {
+    if (invoices.length > 0) {
+      setLocalInvoices(invoices);
+    }
+  }, [invoices]);
 
   const handleView = (receipt) => {
     setSelectedReceipt(receipt);
@@ -145,32 +154,70 @@ const Orgdashboard = () => {
     try {
       const newStatus = action === "accept" ? "accepted" : "rejected";
       const updatedReceipt = { ...receipt, status: newStatus };
-      await updateInvoice(receipt.id, updatedReceipt);
-      await fetchInvoices();
+
+      const response = await fetch(`/api/invoices/${receipt.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedReceipt),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update receipt status");
+      }
+
+      const updatedInvoices = localInvoices.map((inv) =>
+        inv.id === receipt.id ? updatedReceipt : inv
+      );
+      setLocalInvoices(updatedInvoices);
+
+      await mutate();
+
       setIsModalOpen(false);
+      setSelectedReceipt(null);
     } catch (error) {
       console.error("Failed to update receipt status:", error);
+      alert(`Failed to ${action} receipt: ${error.message}`);
     }
   };
 
   const getActiveReceipts = () => {
     switch (activeTab) {
       case "pending":
-        return pendingReceipts;
+        return localInvoices.filter((receipt) => receipt?.status === "pending");
       case "accepted":
-        return acceptedReceipts;
+        return localInvoices.filter(
+          (receipt) => receipt?.status === "accepted"
+        );
       case "rejected":
-        return rejectedReceipts;
+        return localInvoices.filter(
+          (receipt) => receipt?.status === "rejected"
+        );
       default:
         return [];
     }
   };
 
-  const filteredReceipts = getActiveReceipts().filter(
-    (receipt) =>
-      receipt.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      receipt.vendor.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const pendingReceipts = localInvoices.filter(
+    (receipt) => receipt?.status === "pending"
   );
+  const acceptedReceipts = localInvoices.filter(
+    (receipt) => receipt?.status === "accepted"
+  );
+  const rejectedReceipts = localInvoices.filter(
+    (receipt) => receipt?.status === "rejected"
+  );
+
+  const filteredReceipts = getActiveReceipts().filter((receipt) => {
+    if (!receipt) return false;
+    const receiptName = (receipt.name || "").toLowerCase();
+    const vendorName = (receipt.vendor?.name || "").toLowerCase();
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      receiptName.includes(searchLower) || vendorName.includes(searchLower)
+    );
+  });
 
   if (loading) {
     return (
@@ -249,7 +296,7 @@ const Orgdashboard = () => {
           <AnimatePresence mode="wait">
             {filteredReceipts.map((receipt) => (
               <ReceiptCard
-                key={receipt.bill.invoice_number}
+                key={receipt?.bill?.invoice_number || Math.random()}
                 receipt={receipt}
                 onView={handleView}
               />
@@ -276,58 +323,65 @@ const Orgdashboard = () => {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <p className="text-lg font-medium text-purple-900">
-                      Customer: {selectedReceipt.name}
+                      Customer: {selectedReceipt.name || "N/A"}
                     </p>
-                    <StatusTag status={selectedReceipt.status} />
+                    <StatusTag status={selectedReceipt.status || "pending"} />
                   </div>
                   <p className="text-gray-600">
-                    Date: {new Date(selectedReceipt.bill.date).toLocaleString()}
+                    Date:{" "}
+                    {selectedReceipt.bill?.date
+                      ? new Date(selectedReceipt.bill.date).toLocaleString()
+                      : "N/A"}
                   </p>
                   <p className="text-gray-600">
-                    Amount: {selectedReceipt.bill.currency}{" "}
-                    {selectedReceipt.bill.totalAmount}
+                    Amount: {selectedReceipt.bill?.currency || ""}{" "}
+                    {selectedReceipt.bill?.totalAmount || "N/A"}
                   </p>
                   <p className="text-gray-600">
-                    Tax: {selectedReceipt.bill.currency}{" "}
-                    {selectedReceipt.bill.totalTax}
+                    Tax: {selectedReceipt.bill?.currency || ""}{" "}
+                    {selectedReceipt.bill?.totalTax || "N/A"}
                   </p>
                   <p className="text-gray-600">
-                    Payment Mode: {selectedReceipt.bill.payment_mode}
+                    Payment Mode: {selectedReceipt.bill?.payment_mode || "N/A"}
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <p className="font-medium text-purple-900">Vendor Details:</p>
                   <p className="text-gray-600">
-                    Name: {selectedReceipt.vendor.name}
+                    Name: {selectedReceipt.vendor?.name || "N/A"}
                   </p>
                   <p className="text-gray-600">
-                    Category: {selectedReceipt.vendor.category}
+                    Category: {selectedReceipt.vendor?.category || "N/A"}
                   </p>
                   <p className="text-gray-600">
-                    Registration: {selectedReceipt.vendor.registration_number}
+                    Registration:{" "}
+                    {selectedReceipt.vendor?.registration_number || "N/A"}
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <p className="font-medium text-purple-900">Items:</p>
                   <div className="space-y-2">
-                    {selectedReceipt.items.map((item, index) => (
+                    {(selectedReceipt.items || []).map((item, index) => (
                       <div key={index} className="bg-purple-50 p-3 rounded-lg">
                         <p className="font-medium text-purple-900">
-                          {item.name}
+                          {item?.name || "Unnamed Item"}
                         </p>
                         <p className="text-gray-600">
-                          Quantity: {item.quantity}
+                          Quantity: {item?.quantity || "N/A"}
                         </p>
                         <p className="text-gray-600">
-                          Rate: {selectedReceipt.bill.currency} {item.rate}
+                          Rate: {selectedReceipt.bill?.currency || ""}{" "}
+                          {item?.rate || "N/A"}
                         </p>
                         <p className="text-gray-600">
-                          Tax: {selectedReceipt.bill.currency} {item.tax}
+                          Tax: {selectedReceipt.bill?.currency || ""}{" "}
+                          {item?.tax || "N/A"}
                         </p>
                         <p className="text-gray-600">
-                          Total: {selectedReceipt.bill.currency} {item.total}
+                          Total: {selectedReceipt.bill?.currency || ""}{" "}
+                          {item?.total || "N/A"}
                         </p>
                       </div>
                     ))}

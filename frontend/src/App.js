@@ -28,7 +28,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Orgdashboard /></ProtectedRoute> }/>
+      <Route path="/dashboard" element={<Orgdashboard /> }/>
       <Route path="/userDashboard" element={<Dashboard />} />
       <Route path="/userUpload" element={<ReceiptUploader />} />
       <Route path="/test" element={<FetchUserInvoices />} />
