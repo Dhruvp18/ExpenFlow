@@ -5,6 +5,8 @@ import os
 import json
 from werkzeug.utils import secure_filename
 import mimetypes
+from ReportGeneration import generate_expense_report
+from FraudDetection import detect_fraud
 
 app = Flask(__name__)
 CORS(app)
@@ -17,8 +19,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 VERYFI_URL = "https://api.veryfi.com/api/v8/partner/documents"
 HEADERS = {
     'Accept': 'application/json',
-    'CLIENT-ID': 'vrfnRVLfK8XO0YHSH0xIeXDdpC1eymliVdL7TKc',
-    'AUTHORIZATION': 'apikey virajvora2409:7405dd36149e92e3954beb21ed4a936a'
+    'CLIENT-ID': 'vrfx4TnI53Pwwb8kb5jBYbKdJpz1y95nXgVn8w7',
+    'AUTHORIZATION': 'apikey vrvora_b23:141f7f002498aae4fdb84bde80c0c95d'
 }
 
 def allowed_file(filename):
@@ -106,6 +108,8 @@ def upload_file():
             
             try:
                 json_data = response.json()
+                fraud_detected = detect_fraud(json_data)
+                generate_expense_report(fraud_detected,"AIzaSyCEbn8bq8qCFT3nl0_7ft1ub_V-qehNLlQ")
             except ValueError as e:
                 print(f"Failed to parse JSON: {str(e)}")
                 return jsonify({'error': 'Invalid JSON response from Veryfi API'}), 500

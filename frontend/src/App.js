@@ -40,7 +40,7 @@ const AppRoutes = () => {
       <Route path="/userDashboard" element={<Dashboard />} />
       <Route path="/userUpload" element={<ReceiptUploader />} />
       <Route path ='/chat-bot' element={<Chatbot/>}/>
-      <Route path="/test" element={<Test />} />
+      <Route path="/test" element={<FetchUserInvoices />} />
     </Routes>
   );
 };
