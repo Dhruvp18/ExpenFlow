@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileText,
@@ -7,10 +7,11 @@ import {
   XCircle,
   ChevronRight,
   Search,
-  Download, 
+  Download,
 } from "lucide-react";
-import { data } from "./dummydata";
 import Navbar from "./Navbar";
+import useFetchUserInvoices from "../hooks/useFetchUserInvoices";
+import { updateInvoice } from "../services/api";
 
 const TabButton = ({ active, children, onClick }) => (
   <motion.button
@@ -123,36 +124,33 @@ const Orgdashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [pendingReceipts, setPendingReceipts] = useState(
-    data.users.map((user) => ({ ...user, status: "pending" }))
+  const { invoices, loading, error, fetchInvoices } = useFetchUserInvoices();
+
+  const pendingReceipts = invoices.filter(
+    (receipt) => receipt.status === "pending"
   );
-  const [acceptedReceipts, setAcceptedReceipts] = useState([]);
-  const [rejectedReceipts, setRejectedReceipts] = useState([]);
+  const acceptedReceipts = invoices.filter(
+    (receipt) => receipt.status === "accepted"
+  );
+  const rejectedReceipts = invoices.filter(
+    (receipt) => receipt.status === "rejected"
+  );
 
   const handleView = (receipt) => {
     setSelectedReceipt(receipt);
     setIsModalOpen(true);
   };
 
-  const handleReceiptAction = (receipt, action) => {
-    if (action === "accept") {
-      setAcceptedReceipts([
-        ...acceptedReceipts,
-        { ...receipt, status: "accepted" },
-      ]);
-      setPendingReceipts(
-        pendingReceipts.filter((r) => r.name !== receipt.name)
-      );
-    } else if (action === "reject") {
-      setRejectedReceipts([
-        ...rejectedReceipts,
-        { ...receipt, status: "rejected" },
-      ]);
-      setPendingReceipts(
-        pendingReceipts.filter((r) => r.name !== receipt.name)
-      );
+  const handleReceiptAction = async (receipt, action) => {
+    try {
+      const newStatus = action === "accept" ? "accepted" : "rejected";
+      const updatedReceipt = { ...receipt, status: newStatus };
+      await updateInvoice(receipt.id, updatedReceipt);
+      await fetchInvoices();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Failed to update receipt status:", error);
     }
-    setIsModalOpen(false);
   };
 
   const getActiveReceipts = () => {
@@ -173,6 +171,22 @@ const Orgdashboard = () => {
       receipt.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       receipt.vendor.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-purple-50 flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-purple-50 flex items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-purple-50">
@@ -210,7 +224,6 @@ const Orgdashboard = () => {
             whileTap={{ scale: 0.98 }}
             className="px-6 py-3 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center space-x-2"
             onClick={() => {
-              
               console.log("Downloading report...");
             }}
           >
