@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
 import axios from 'axios';
 import { Send, Bot, User } from 'lucide-react';
+import useFetchUserInvoices from '../hooks/useFetchUserInvoices';
 
 const Chatbot = () => {
+  const { invoices, error } = useFetchUserInvoices(); // Fetch invoices
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
-
+  console.log(invoices)
   // Scroll to the bottom of the chat when new messages are added
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -29,11 +31,14 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      // Send the user's message to the backend
-      const response = await axios.post('http://localhost:5002/api/chat', { message: input });
+      // Send the user's message AND invoices to the backend
+      const response = await axios.post('http://localhost:5002/api/chat', {
+        message: input,
+        invoices: invoices, // Pass the invoices data here
+      });
 
       // Extract the bot's reply from the backend response
-      const botResponse = response.data.response; // Adjusted to match the backend response structure
+      const botResponse = response.data.response;
 
       // Add the bot's response to the chat
       setMessages((prev) => [...prev, { sender: 'bot', message: botResponse, animated: true }]);
@@ -108,6 +113,7 @@ const Chatbot = () => {
                   <Bot className="w-5 h-5 text-white" />
                 )}
               </div>
+
               {/* Message Bubble */}
               <div
                 className={`max-w-[80%] p-4 rounded-2xl ${
@@ -132,6 +138,7 @@ const Chatbot = () => {
             </div>
           );
         })}
+
         {/* Loading Indicator */}
         {loading && (
           <div className="flex items-start gap-3 mb-4">
@@ -147,6 +154,7 @@ const Chatbot = () => {
             </div>
           </div>
         )}
+
         <div ref={messagesEndRef} />
       </div>
 

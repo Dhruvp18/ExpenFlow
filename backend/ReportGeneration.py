@@ -4,87 +4,80 @@ from docx import Document
 from tabulate import tabulate
 import yagmail
 
-EXPENSE_POLICIES = {
-    "Executive Level": {
+EXPENSE_POLICIES = "Executive Level": {
         "Travel Expenses": {
-            "Business Trips": "₹4,00,000 - ₹16,00,000 per month",
-            "Local Transportation": "₹30,000 - ₹60,000 per month",
-            "Mileage Reimbursement": "₹45,000 per month",
+            "Business Trips": {"min": 0, "max": 1600000},
+            "Local Transportation": {"min": 0, "max": 60000},
+            "Mileage Reimbursement": {"min":0, "max":45000},
             "Parking Fees & Tolls": "Fully covered"
         },
         "Accommodation": {
-            "Hotel Stays": "₹25,000 - ₹1,25,000 per night",
-            "Rental Allowance": "₹2,50,000 - ₹6,00,000 per month",
-            "Meals During Travel": "₹8,000 - ₹40,000 per day"
+            "Hotel Stays": {"min": 0, "max": 125000},
+            "Rental Allowance": {"min": 0, "max": 600000},
+            "Meals During Travel": {"min": 0, "max": 40000}
         },
         "Office Supplies and Equipment": {
-            "Work Tools": "Unlimited (as per requirement)",
-            "Home Office Setup": "Up to ₹8,00,000"
+            "Work Tools": "Unlimited",
+            "Home Office Setup": {"min":0, "max":800000}
         },
         "Communication Expenses": {
             "Mobile/Internet Bills": "Fully covered"
         },
         "Meals and Entertainment": {
-            "Client Meetings": "Up to ₹4,00,000 per month",
-            "Team Outings": "Up to ₹1,60,000 per month",
-            "Daily Meal Allowance": "₹8,000 - ₹24,000 per day"
+            "Client Meetings": {"min": 0, "max": 4000000},
+            "Team Outings": {"min": 0, "max": 1600000},
+            "Daily Meal Allowance": {"min": 0, "max": 24000}
         }
     },
     "Senior Management": {
         "Travel Expenses": {
-            "Business Trips": "₹1,50,000 - ₹4,00,000 per month",
-            "Local Transportation": "₹20,000 - ₹25,000 per month",
-            "Mileage Reimbursement": "₹30,000 per month",
-            "Parking Fees & Tolls": "Up to ₹10,000 per month"
+            "Business Trips": {"min": 0, "max": 400000},
+            "Local Transportation": {"min": 0, "max": 25000},
+            "Mileage Reimbursement": {"min":0, "max":30000},
+            "Parking Fees & Tolls": {"min": 0, "max": 10000}
         },
         "Accommodation": {
-            "Hotel Stays": "₹16,000 - ₹80,000 per night",
-            "Rental Allowance": "₹1,00,000 - ₹1,50,000 per month",
-            "Meals During Travel": "₹6,000 - ₹24,000 per day"
+            "Hotel Stays": {"min": 0, "max": 80000},
+            "Rental Allowance": {"min": 0, "max": 150000},
+            "Meals During Travel": {"min": 0, "max": 24000}
         },
         "Office Supplies and Equipment": {
-            "Work Tools": "Up to ₹4,00,000 per year",
-            "Home Office Setup": "Up to ₹4,00,000"
-        },
-        "Communication Expenses": {
-            "Mobile/Internet Bills": "Fully covered"
+            "Work Tools": {"min":0, "max":400000},
+            "Home Office Setup": {"min":0, "max":400000}
         },
         "Meals and Entertainment": {
-            "Client Meetings": "Up to ₹2,40,000 per month",
-            "Team Outings": "Up to ₹1,20,000 per month"
+            "Client Meetings": {"min": 0, "max": 2400000},
+            "Team Outings": {"min": 0, "max": 1200000}
         }
     },
     "Middle Management": {
         "Travel Expenses": {
-            "Business Trips": "₹1,60,000 - ₹5,60,000 per month",
-            "Local Transportation": "₹16,000 - ₹20,000 per month",
-            "Mileage Reimbursement": "₹25,000 per month"
+            "Business Trips": {"min": 0, "max": 560000},
+            "Local Transportation": {"min": 0, "max": 20000},
+            "Mileage Reimbursement": {"min":0, "max":25000}
         },
         "Accommodation": {
-            "Rental Allowance": "₹80,000 - ₹90,000 per month"
+            "Rental Allowance": {"min": 0, "max": 90000}
         },
         "Office Supplies and Equipment": {
-            "Work Tools": "Up to ₹2,40,000 per year",
-            "Home Office Setup": "Up to ₹2,40,000"
-        },
-        "Communication Expenses": {
-            "Mobile/Internet Bills": "Fully covered"
+            "Work Tools": {"min":0, "max":24000},
+            "Home Office Setup": {"min":0, "max":24000}
         },
         "Meals and Entertainment": {
-            "Client Meetings": "Up to ₹1,60,000 per event"
+            "Client Meetings": {"min": 0, "max": 1600000}
         }
     },
     "Lower Management": {
         "Travel Expenses": {
-            "Business Trips": "₹80,000 - ₹4,00,000 per trip",
-            "Local Transportation": "₹12,000 - ₹15,000 per month",
-            "Mileage Reimbursement": "₹20,000 per month"
+            "Business Trips": {"min": 0, "max": 400000},
+            "Local Transportation": {"min": 0, "max": 15000},
+            "Mileage Reimbursement": {"min":0, "max":20000}
         },
         "Accommodation": {
-            "Rental Allowance": "₹40,000 - ₹50,000 per month"
+            "Rental Allowance": {"min": 0, "max": 50000}
         },
         "Office Supplies and Equipment": {
-            "Work Tools": "Up to ₹1,60,000 per year"
+            "Work Tools": {"min":0, "max":160000}
         },
         "Communication Expenses": {
             "Mobile/Internet Bills": "Fully covered"
@@ -92,15 +85,15 @@ EXPENSE_POLICIES = {
     },
     "Team Leads & Supervisors": {
         "Travel Expenses": {
-            "Business Trips": "₹40,000 - ₹2,40,000 per trip",
-            "Local Transportation": "₹8,000 - ₹10,000 per month",
-            "Mileage Reimbursement": "₹15,000 per month"
+            "Business Trips": {"min": 0, "max": 240000},
+            "Local Transportation": {"min": 0, "max": 10000},
+            "Mileage Reimbursement": {"min":0, "max":20000}
         },
         "Accommodation": {
-            "Rental Allowance": "₹30,000 - ₹40,000 per month"
+            "Rental Allowance": {"min": 0, "max": 40000}
         },
         "Meals and Entertainment": {
-            "Client Meetings": "Up to ₹80,000 per event"
+            "Client Meetings": {"min": 0, "max": 800000}
         },
         "Communication Expenses": {
             "Mobile/Internet Bills": "Fully covered"
@@ -108,21 +101,22 @@ EXPENSE_POLICIES = {
     },
     "Staff & Employees": {
         "Travel Expenses": {
-            "Business Trips": "₹24,000 - ₹1,60,000 per trip",
-            "Local Transportation": "Up to ₹5,000 per month",
-            "Mileage Reimbursement": "₹10,000 per month"
+            "Business Trips": {"min": 0, "max": 160000},
+            "Local Transportation": {"min": 0, "max": 5000},
+            "Mileage Reimbursement": {"min":0, "max":10000}
         },
         "Accommodation": {
-            "Rental Allowance": "₹15,000 - ₹30,000 per month"
+            "Rental Allowance": {"min": 0, "max": 30000}
         },
         "Office Supplies and Equipment": {
-            "Work Tools": "Up to ₹80,000 per year"
+            "Work Tools": {"min":0, "max":80000}
         },
         "Communication Expenses": {
             "Mobile/Internet Bills": "Fully covered"
         }
     }
-}
+
+
 
 def generate_expense_report(json_data, api_key):
     """
@@ -138,13 +132,9 @@ def generate_expense_report(json_data, api_key):
     """
     # Set up Gemini API
     genai.configure(api_key=api_key)
+    
 
-    # Define expense categories
-    expense_categories = [
-        "Flight", "Hotel", "Stationery", "Travel", "Accommodation",
-        "Office Supplies and Equipment", "Training and Development",
-        "Health and Wellness", "Miscellaneous"
-    ]
+    expense_categories = [for key in EXPENSE_POLICIES]
 
     # Helper function to categorize items
     def categorize_item(item_name):
